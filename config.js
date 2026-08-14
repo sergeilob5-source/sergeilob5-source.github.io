@@ -1,9 +1,7 @@
 'use strict';
 /*
-  Адрес бэкенда обратной связи (Google Apps Script Web App).
-  Пока пусто — форма пишет только в localStorage.
-  После деплоя скрипта (см. feedback-backend/README.md) вставьте сюда URL вида
-  https://script.google.com/macros/s/XXXXXXXX/exec — и отзывы полетят в таблицу
-  со всех устройств.
+  Отзывы обратной связи хранятся локально в браузере (localStorage, ключ
+  'vcar_feedback') и читаются только разработчиком через инструменты браузера.
+  Внешний бэкенд не используется — эндпоинт пуст.
 */
 window.FEEDBACK_ENDPOINT = '';

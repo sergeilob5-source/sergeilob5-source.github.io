@@ -81,15 +81,26 @@ if (fbBtn) {
   fbForm.addEventListener('submit', e => {
     e.preventDefault();
     if (!fbText.value.trim()) { fbText.focus(); return; }
-    const list = window.readFeedback();
-    list.push({
+    const entry = {
       text: fbText.value.trim(),
       contact: fbContact.value.trim() || '',
       page: location.pathname + location.search,
       ua: navigator.userAgent,
       date: new Date().toISOString()
-    });
+    };
+    // Локальный бэкап (на случай если бэкенд не настроен/недоступен).
+    const list = window.readFeedback();
+    list.push(entry);
     localStorage.setItem(FB_KEY, JSON.stringify(list));
+    // Отправка на бэкенд (Google Apps Script). text/plain — чтобы не было CORS-preflight.
+    const endpoint = window.FEEDBACK_ENDPOINT;
+    if (endpoint) {
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(entry)
+      }).catch(() => {}); // тихо — отзыв уже сохранён локально
+    }
     fbOk.hidden = false;
     fbForm.reset();
     setTimeout(closeFb, 2200);

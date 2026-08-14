@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Каталог авто под заказ — Вихляев Авто</title>
+  <meta name="description" content="Каталог автомобилей под заказ с аукционов Японии, Кореи и Китая. Фильтр по марке, кузову, цене, году. Заказ под ключ на ваше имя." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="site-header" id="top">
+    <div class="container header__inner">
+      <a href="index.html" class="logo" aria-label="Вихляев Авто">
+        <span class="logo__mark">В</span>
+        <span class="logo__text">ВИХЛЯЕВ<b>АВТО</b></span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html" class="is-active">Каталог</a>
+        <a href="index.html#calc">Калькулятор</a>
+        <a href="index.html#faq">Вопросы</a>
+        <a href="index.html#reviews">Отзывы</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+      <a href="tel:+79000000000" class="header__phone">8 (900) 000-00-00</a>
+      <button class="btn btn--accent header__cta" data-modal-open data-subject="Заказать авто">Заказать авто</button>
+      <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- ===== Catalog head ===== -->
+  <section class="cat-hero">
+    <div class="container">
+      <h1 class="cat-hero__title">Каталог авто под заказ</h1>
+      <p class="cat-hero__sub">Аукционы Японии, Кореи и Китая · цена ориентировочная «под ключ в РФ»</p>
+    </div>
+  </section>
+
+  <!-- ===== Catalog body ===== -->
+  <section class="section catalog">
+    <div class="container catalog__grid">
+      <!-- Filters -->
+      <aside class="filters" id="filters">
+        <div class="filters__head">
+          <h2>Фильтры</h2>
+          <button class="filters__reset" id="resetBtn" type="button">Сбросить</button>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label">Поиск</label>
+          <input type="search" id="fSearch" class="filters__input" placeholder="Toyota, BYD, седан…" />
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label">Страна</label>
+          <div class="chips" id="fCountry">
+            <button class="chip is-active" data-val="">Все</button>
+            <button class="chip" data-val="jp">🇯🇵 Япония</button>
+            <button class="chip" data-val="kr">🇰🇷 Корея</button>
+            <button class="chip" data-val="cn">🇨🇳 Китай</button>
+          </div>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label" for="fBrand">Марка</label>
+          <select id="fBrand" class="filters__input"><option value="">Любая</option></select>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label" for="fBody">Кузов</label>
+          <select id="fBody" class="filters__input"><option value="">Любой</option></select>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label" for="fFuel">Двигатель</label>
+          <select id="fFuel" class="filters__input"><option value="">Любой</option></select>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label">Цена под ключ, ₽</label>
+          <div class="field__row">
+            <input type="number" id="fPriceMin" class="filters__input" placeholder="от" min="0" step="100000" />
+            <input type="number" id="fPriceMax" class="filters__input" placeholder="до" min="0" step="100000" />
+          </div>
+        </div>
+
+        <div class="filters__block">
+          <label class="filters__label">Год выпуска</label>
+          <div class="field__row">
+            <input type="number" id="fYearMin" class="filters__input" placeholder="от" min="1990" max="2026" />
+            <input type="number" id="fYearMax" class="filters__input" placeholder="до" min="1990" max="2026" />
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <div class="results">
+        <div class="results__bar">
+          <span id="count" class="results__count">—</span>
+          <label class="results__sort">
+            Сортировка:
+            <select id="sort" class="filters__input">
+              <option value="pop">по популярности</option>
+              <option value="priceAsc">цена ↑</option>
+              <option value="priceDesc">цена ↓</option>
+              <option value="yearDesc">год ↓</option>
+              <option value="mileageAsc">пробег ↑</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid-cars" id="grid"></div>
+        <p class="results__empty" id="empty" hidden>По вашему запросу ничего не найдено. Сбросьте фильтры или оставьте заявку — подберём вручную.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© 2026 Вихляев Авто. Импорт авто и мото под ключ.</span>
+      <a href="#top">Наверх ↑</a>
+    </div>
+  </footer>
+
+  <!-- ===== Car detail modal ===== -->
+  <div class="modal" id="carModal" hidden>
+    <div class="modal__overlay" data-car-close></div>
+    <div class="modal__box modal__box--wide" role="dialog" aria-modal="true">
+      <button class="modal__close" data-car-close aria-label="Закрыть">×</button>
+      <div id="carDetail"></div>
+    </div>
+  </div>
+
+  <!-- ===== Lead modal ===== -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__overlay" data-modal-close></div>
+    <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" data-modal-close aria-label="Закрыть">×</button>
+      <h3 id="modalTitle">Оставить заявку</h3>
+      <p class="modal__sub">Менеджер свяжется с вами и подберёт авто под ваш бюджет.</p>
+      <form class="lead" id="leadForm" novalidate>
+        <input type="hidden" name="subject" id="leadSubject" />
+        <div class="field"><label for="leadName">Имя</label><input type="text" id="leadName" required placeholder="Как к вам обращаться" /></div>
+        <div class="field"><label for="leadPhone">Телефон</label><input type="tel" id="leadPhone" required placeholder="+7 (___) ___-__-__" /></div>
+        <div class="field"><label for="leadComment">Комментарий</label><textarea id="leadComment" rows="3" placeholder="Марка, модель, бюджет"></textarea></div>
+        <label class="checkbox"><input type="checkbox" id="leadAgree" required /><span>Согласен на обработку персональных данных</span></label>
+        <button type="submit" class="btn btn--accent btn--block btn--lg">Отправить заявку</button>
+        <p class="lead__ok" id="leadOk" hidden>Спасибо! Заявка принята — менеджер скоро свяжется с вами.</p>
+      </form>
+    </div>
+  </div>
+
+  <script src="cars.js"></script>
+  <script src="script.js"></script>
+  <script src="catalog.js"></script>
+</body>
+</html>

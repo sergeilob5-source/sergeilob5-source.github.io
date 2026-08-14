@@ -1,0 +1,6 @@
+.claude/
+node_modules/
+*.log
+mermaid-filter.err
+.DS_Store
+Thumbs.db

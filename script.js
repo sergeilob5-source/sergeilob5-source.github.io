@@ -55,6 +55,47 @@ function closeModal() {
 }
 window.openModal = openModal; // used by catalog.js
 
+/* ===== Feedback (обратная связь) =====
+   Сообщения складываются в localStorage браузера под ключом 'vcar_feedback'
+   (массив объектов). Разработчик читает их через консоль или инструмент браузера:
+     JSON.parse(localStorage.getItem('vcar_feedback') || '[]')
+   Ограничение: хранилище привязано к конкретному браузеру/устройству, поэтому
+   я вижу отзывы только на том устройстве, где их оставили и где открыт сайт. */
+const FB_KEY = 'vcar_feedback';
+window.readFeedback = () => JSON.parse(localStorage.getItem(FB_KEY) || '[]');
+
+const fbBtn = document.getElementById('fbBtn');
+if (fbBtn) {
+  const fbModal = document.getElementById('fbModal');
+  const fbForm = document.getElementById('fbForm');
+  const fbText = document.getElementById('fbText');
+  const fbContact = document.getElementById('fbContact');
+  const fbOk = document.getElementById('fbOk');
+
+  const openFb = () => { fbModal.hidden = false; document.body.style.overflow = 'hidden'; fbText.focus(); };
+  const closeFb = () => { fbModal.hidden = true; document.body.style.overflow = ''; fbOk.hidden = true; };
+  fbBtn.addEventListener('click', openFb);
+  document.querySelectorAll('[data-fb-close]').forEach(el => el.addEventListener('click', closeFb));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !fbModal.hidden) closeFb(); });
+
+  fbForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!fbText.value.trim()) { fbText.focus(); return; }
+    const list = window.readFeedback();
+    list.push({
+      text: fbText.value.trim(),
+      contact: fbContact.value.trim() || '',
+      page: location.pathname + location.search,
+      ua: navigator.userAgent,
+      date: new Date().toISOString()
+    });
+    localStorage.setItem(FB_KEY, JSON.stringify(list));
+    fbOk.hidden = false;
+    fbForm.reset();
+    setTimeout(closeFb, 2200);
+  });
+}
+
 document.querySelectorAll('[data-modal-open]').forEach(btn => {
   btn.addEventListener('click', () => openModal(btn.dataset.subject));
 });

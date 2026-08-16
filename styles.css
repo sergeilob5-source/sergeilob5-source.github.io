@@ -250,6 +250,7 @@ img{max-width:100%;display:block}
 .admin__tab.is-active{background:var(--panel-2);color:var(--text)}
 .admin__pane{padding:1.4rem 4vw 3rem}
 .admin__bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
+.admin__bar-btns{display:flex;gap:.6rem;flex-wrap:wrap}
 .admin__count{color:var(--muted);font-weight:500;font-size:1rem}
 .admin__table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
 .admin__table{width:100%;border-collapse:collapse;min-width:640px}

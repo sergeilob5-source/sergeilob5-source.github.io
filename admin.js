@@ -8,10 +8,15 @@
   const dt = s => s ? new Date(s).toLocaleString('ru-RU') : '';
 
   const loginBox = $('adminLogin'), panel = $('adminPanel');
+  const LOCAL = !window.DB || window.DB.mode === 'local';
 
-  if (!window.DB || !window.DB.enabled) {
+  if (LOCAL) {
+    // Локальный режим: вход логин/пароль, данные в этом браузере.
+    document.querySelector('label[for="admEmail"]').textContent = 'Логин';
+    $('admEmail').type = 'text';
+    $('admEmail').placeholder = 'admin';
     $('admConfigHint').hidden = false;
-    $('admLoginBtn').disabled = true;
+    $('admConfigHint').textContent = 'Локальный режим: логин admin, пароль vcar. Данные хранятся в этом браузере на вашем компьютере.';
   }
 
   /* ---------- Auth ---------- */
@@ -37,6 +42,22 @@
     }
   });
   $('admLogout').addEventListener('click', async () => { await window.DB.signOut(); refreshAuth(); });
+
+  // Подсказка режима на вкладке «Авто».
+  $('modeHint').textContent = LOCAL
+    ? 'Данные хранятся локально (в этом браузере). Чтобы показать правки всем через GitHub — нажмите «Экспорт cars.js», замените файл в репозитории и запушьте.'
+    : 'Данные в Supabase — правки видны всем сразу.';
+
+  // Экспорт каталога в cars.js для коммита.
+  $('exportBtn').addEventListener('click', () => {
+    const text = window.DB.exportCarsFile();
+    const blob = new Blob([text], { type: 'text/javascript;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cars.js';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
 
   /* ---------- Tabs ---------- */
   document.querySelectorAll('.admin__tab').forEach(tab => {

@@ -43,8 +43,12 @@
     <section class="admin__pane" id="tab-cars">
       <div class="admin__bar">
         <h2>Автомобили <span id="carsCount" class="admin__count"></span></h2>
-        <button class="btn btn--accent" id="addCarBtn">+ Добавить авто</button>
+        <div class="admin__bar-btns">
+          <button class="btn btn--ghost" id="exportBtn" title="Скачать cars.js для коммита в GitHub">⬇ Экспорт cars.js</button>
+          <button class="btn btn--accent" id="addCarBtn">+ Добавить авто</button>
+        </div>
       </div>
+      <p class="admin__hint" id="modeHint"></p>
       <div class="admin__table-wrap">
         <table class="admin__table" id="carsTable">
           <thead><tr><th>Фото</th><th>Марка / модель</th><th>Год</th><th>Страна</th><th>Цена</th><th>Статус</th><th></th></tr></thead>

@@ -81,29 +81,13 @@ if (fbBtn) {
   fbForm.addEventListener('submit', e => {
     e.preventDefault();
     if (!fbText.value.trim()) { fbText.focus(); return; }
-    const entry = {
-      text: fbText.value.trim(),
-      contact: fbContact.value.trim() || '',
-      page: location.pathname + location.search,
-      ua: navigator.userAgent,
-      date: new Date().toISOString()
-    };
-    // Локальный бэкап (на случай если бэкенд не настроен/недоступен).
-    const list = window.readFeedback();
-    list.push(entry);
-    localStorage.setItem(FB_KEY, JSON.stringify(list));
-    // Отправка на бэкенд (Google Apps Script). text/plain — чтобы не было CORS-preflight.
-    const endpoint = window.FEEDBACK_ENDPOINT;
-    if (endpoint) {
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(entry)
-      }).catch(() => {}); // тихо — отзыв уже сохранён локально
-    }
-    fbOk.hidden = false;
-    fbForm.reset();
-    setTimeout(closeFb, 2200);
+    const entry = { text: fbText.value.trim(), contact: fbContact.value.trim() || '' };
+    // db.js сам пишет в Supabase (если настроен) и всегда делает локальный бэкап.
+    (window.DB ? window.DB.submitFeedback(entry) : Promise.resolve()).finally(() => {
+      fbOk.hidden = false;
+      fbForm.reset();
+      setTimeout(closeFb, 2200);
+    });
   });
 }
 
@@ -139,22 +123,24 @@ leadForm.addEventListener('submit', e => {
   if (digits.length < 11) { phone.focus(); return; }
   if (!agree.checked) { agree.focus(); return; }
 
-  // Демо: реальная отправка на бэкенд/CRM подключается здесь.
   const payload = {
     subject: leadSubject.value,
     name: name.value.trim(),
     phone: phone.value,
     comment: document.getElementById('leadComment').value.trim()
   };
-  console.log('Заявка:', payload);
 
-  document.getElementById('leadOk').hidden = false;
-  leadForm.querySelectorAll('input,textarea,button').forEach(el => { if (el.type !== 'hidden') el.disabled = true; });
-  setTimeout(() => {
-    leadForm.reset();
-    leadForm.querySelectorAll('input,textarea,button').forEach(el => el.disabled = false);
-    closeModal();
-  }, 2200);
+  const fields = leadForm.querySelectorAll('input,textarea,button');
+  fields.forEach(el => { if (el.type !== 'hidden') el.disabled = true; });
+  // Отправка через слой данных (Supabase, либо console.log-фолбэк).
+  (window.DB ? window.DB.submitLead(payload) : Promise.resolve()).finally(() => {
+    document.getElementById('leadOk').hidden = false;
+    setTimeout(() => {
+      leadForm.reset();
+      fields.forEach(el => el.disabled = false);
+      closeModal();
+    }, 2200);
+  });
 });
 
 /* ===== Customs / total cost calculator ===== */

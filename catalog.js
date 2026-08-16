@@ -1,8 +1,10 @@
 'use strict';
-/* Каталог: рендер, фильтры, сортировка, детальная карточка. Данные — window.CARS */
-(function () {
-  const CARS = window.CARS || [];
+/* Каталог: рендер, фильтры, сортировка, детальная карточка.
+   Данные из Supabase (window.DB), фолбэк — window.CARS */
+(async function () {
+  const CARS = window.DB ? await window.DB.getCars() : (window.CARS || []);
   const COUNTRY = { jp: '🇯🇵 Япония', kr: '🇰🇷 Корея', cn: '🇨🇳 Китай' };
+  const STATUS = { order: 'Под заказ', in_stock: 'В наличии', sold: 'Продано' };
   const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
   const km = n => new Intl.NumberFormat('ru-RU').format(n) + ' км';
   const engTxt = c => c.engine ? c.engine.toFixed(1) + ' л · ' + c.fuel : c.fuel;
@@ -67,10 +69,14 @@
     emptyEl.hidden = list.length > 0;
     grid.innerHTML = list.map(c => `
       <article class="car" data-id="${c.id}">
-        <div class="car__photo" style="--c:${c.color}">
-          <span class="car__flag">${COUNTRY[c.country].split(' ')[0]}</span>
-          <span class="car__badge">${c.year}</span>
-          <span class="car__silh">${c.brand}</span>
+        <div class="car__photo" style="--c:${c.color || '#2a3852'}">
+          ${c.photos && c.photos[0]
+            ? `<img class="car__img" src="${c.photos[0]}" alt="${c.brand} ${c.model}" loading="lazy">`
+            : `<span class="car__silh">${c.brand}</span>`}
+          <span class="car__flag">${(COUNTRY[c.country] || '').split(' ')[0]}</span>
+          <span class="car__badge">${c.year || ''}</span>
+          ${c.featured ? '<span class="car__hit">Хит</span>' : ''}
+          ${c.status && c.status !== 'order' ? `<span class="car__status car__status--${c.status}">${STATUS[c.status]}</span>` : ''}
         </div>
         <div class="car__body">
           <h3 class="car__title">${c.brand} ${c.model}</h3>
@@ -100,23 +106,35 @@
   function openCar(id) {
     const c = CARS.find(x => x.id === id);
     if (!c) return;
+    const photos = Array.isArray(c.photos) ? c.photos : [];
+    const mainPhoto = photos[0]
+      ? `<img class="detail__img" id="detailMain" src="${photos[0]}" alt="${c.brand} ${c.model}">`
+      : `<span class="detail__brand">${c.brand}</span>`;
+    const thumbs = photos.length > 1
+      ? `<div class="detail__thumbs">${photos.map((u, i) => `<img src="${u}" data-i="${i}" class="${i === 0 ? 'is-active' : ''}" alt="">`).join('')}</div>`
+      : '';
     carDetail.innerHTML = `
       <div class="detail">
-        <div class="detail__photo" style="--c:${c.color}">
-          <span class="car__flag">${COUNTRY[c.country].split(' ')[0]}</span>
-          <span class="detail__brand">${c.brand}</span>
+        <div class="detail__gallery">
+          <div class="detail__photo" style="--c:${c.color || '#2a3852'}">
+            <span class="car__flag">${(COUNTRY[c.country] || '').split(' ')[0]}</span>
+            ${c.status && c.status !== 'order' ? `<span class="car__status car__status--${c.status}">${STATUS[c.status]}</span>` : ''}
+            ${mainPhoto}
+          </div>
+          ${thumbs}
         </div>
         <div class="detail__info">
-          <h3 class="detail__title">${c.brand} ${c.model}, ${c.year}</h3>
+          <h3 class="detail__title">${c.brand} ${c.model}${c.year ? ', ' + c.year : ''}</h3>
           <div class="detail__price">${rub(c.price)} <small>под ключ, ориентировочно</small></div>
           <table class="detail__table">
-            <tr><td>Страна</td><td>${COUNTRY[c.country]}</td></tr>
-            <tr><td>Кузов</td><td>${c.body}</td></tr>
-            <tr><td>Двигатель</td><td>${c.engine ? c.engine.toFixed(1) + ' л' : '—'} · ${c.fuel}</td></tr>
-            <tr><td>Привод</td><td>${c.drive}</td></tr>
-            <tr><td>КПП</td><td>${c.transmission}</td></tr>
+            <tr><td>Страна</td><td>${COUNTRY[c.country] || '—'}</td></tr>
+            <tr><td>Статус</td><td>${STATUS[c.status] || 'Под заказ'}</td></tr>
+            <tr><td>Кузов</td><td>${c.body || '—'}</td></tr>
+            <tr><td>Двигатель</td><td>${c.engine ? (+c.engine).toFixed(1) + ' л' : '—'} · ${c.fuel || ''}</td></tr>
+            <tr><td>Привод</td><td>${c.drive || '—'}</td></tr>
+            <tr><td>КПП</td><td>${c.transmission || '—'}</td></tr>
             <tr><td>Пробег</td><td>${km(c.mileage)}</td></tr>
-            <tr><td>Аукцион</td><td>${c.auction}</td></tr>
+            <tr><td>Аукцион</td><td>${c.auction || '—'}</td></tr>
           </table>
           <button class="btn btn--accent btn--lg btn--block" id="orderThis">Заказать это авто</button>
           <p class="detail__note">Актуальные лоты и точную цену подтвердит менеджер. Фото — по запросу с аукционного листа.</p>
@@ -126,7 +144,15 @@
     document.body.style.overflow = 'hidden';
     document.getElementById('orderThis').addEventListener('click', () => {
       closeCar();
-      if (window.openModal) window.openModal('Заказ: ' + c.brand + ' ' + c.model + ' ' + c.year);
+      if (window.openModal) window.openModal('Заказ: ' + c.brand + ' ' + c.model + (c.year ? ' ' + c.year : ''));
+    });
+    const thumbsEl = carDetail.querySelector('.detail__thumbs');
+    if (thumbsEl) thumbsEl.addEventListener('click', e => {
+      const t = e.target.closest('img[data-i]');
+      if (!t) return;
+      carDetail.querySelector('#detailMain').src = photos[+t.dataset.i];
+      thumbsEl.querySelectorAll('img').forEach(x => x.classList.remove('is-active'));
+      t.classList.add('is-active');
     });
   }
   function closeCar() {

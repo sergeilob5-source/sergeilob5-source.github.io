@@ -250,7 +250,39 @@ img{max-width:100%;display:block}
 .admin__tab.is-active{background:var(--panel-2);color:var(--text)}
 .admin__pane{padding:1.4rem 4vw 3rem}
 .admin__bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
-.admin__bar-btns{display:flex;gap:.6rem;flex-wrap:wrap}
+.admin__bar-btns{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.admin__search{min-width:180px}
+.admin__subh{margin:1.2rem 0 .3rem;font-size:1rem;color:var(--accent-2)}
+
+/* Loading */
+.loading{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.7rem;color:var(--muted);padding:3rem 1rem}
+.loading__spin{width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:1.4rem;transform:translate(-50%,140%);z-index:200;
+  background:var(--panel-2);color:var(--text);border:1px solid var(--line);padding:.7rem 1.2rem;border-radius:999px;
+  box-shadow:var(--shadow);opacity:0;transition:transform .28s ease,opacity .28s ease;font-weight:600}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+/* Favorite star on card */
+.car__fav{position:absolute;top:.55rem;right:.55rem;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.5);color:#ffd36b;font-size:1.15rem;line-height:1;display:grid;place-items:center;transition:transform .12s,background .2s}
+.car__fav:hover{transform:scale(1.1);background:rgba(0,0,0,.7)}
+.car__fav.is-on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#3a2400}
+.car__badge{right:auto;left:2.7rem}
+.results__fav{white-space:nowrap}
+.results__fav.is-active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);border-color:transparent;font-weight:600}
+.detail__actions{display:flex;gap:.7rem;flex-wrap:wrap}
+.detail__actions .btn{flex:1;min-width:150px}
+
+/* 404 */
+.notfound{min-height:100vh;display:grid;place-items:center;padding:1rem;
+  background:radial-gradient(700px 400px at 50% 0,rgba(255,122,26,.14),transparent 60%),var(--bg)}
+.notfound__box{text-align:center;max-width:440px}
+.notfound__box h1{font-size:4rem;font-weight:900;margin:.5rem 0}
+.notfound__box p{color:var(--muted);margin-bottom:1.5rem}
+.notfound__actions{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
 .admin__count{color:var(--muted);font-weight:500;font-size:1rem}
 .admin__table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
 .admin__table{width:100%;border-collapse:collapse;min-width:640px}

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Каталог авто под заказ — Вихляев Авто</title>
   <meta name="description" content="Каталог автомобилей под заказ с аукционов Японии, Кореи и Китая. Фильтр по марке, кузову, цене, году. Заказ под ключ на ваше имя." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -38,7 +39,7 @@
         <a href="index.html#reviews">Отзывы</a>
         <a href="index.html#contacts">Контакты</a>
       </nav>
-      <a href="tel:+79000000000" class="header__phone">8 (900) 000-00-00</a>
+      <a href="tel:+79000000000" class="header__phone" data-setting="phone">8 (900) 000-00-00</a>
       <button class="btn btn--accent header__cta" data-modal-open data-subject="Заказать авто">Заказать авто</button>
       <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -113,6 +114,7 @@
       <div class="results">
         <div class="results__bar">
           <span id="count" class="results__count">—</span>
+          <button type="button" class="chip results__fav" id="favToggle">☆ Избранное</button>
           <label class="results__sort">
             Сортировка:
             <select id="sort" class="filters__input">
@@ -160,7 +162,8 @@
         <div class="field"><label for="leadPhone">Телефон</label><input type="tel" id="leadPhone" required placeholder="+7 (___) ___-__-__" /></div>
         <div class="field"><label for="leadComment">Комментарий</label><textarea id="leadComment" rows="3" placeholder="Марка, модель, бюджет"></textarea></div>
         <label class="checkbox"><input type="checkbox" id="leadAgree" required /><span>Согласен на обработку персональных данных</span></label>
-        <button type="submit" class="btn btn--accent btn--block btn--lg">Отправить заявку</button>
+        <p class="gate__err" id="leadErr" aria-live="polite"></p>
+        <button type="submit" class="btn btn--accent btn--block btn--lg" id="leadBtn">Отправить заявку</button>
         <p class="lead__ok" id="leadOk" hidden>Спасибо! Заявка принята — менеджер скоро свяжется с вами.</p>
       </form>
     </div>
@@ -186,6 +189,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
   <script src="config.js"></script>
+  <script src="settings.js"></script>
   <script src="cars.js"></script>
   <script src="db.js"></script>
   <script src="script.js"></script>

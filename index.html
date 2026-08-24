@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Вихляев Авто — авто и мото из Японии, Кореи и Китая под ключ</title>
   <meta name="description" content="Заказ автомобилей и мотоциклов из Японии, Кореи и Китая под ключ. Прозрачное оформление на ваше имя, работа по договору, доставка по всей России." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Вихляев Авто — авто и мото из Японии, Кореи и Китая" />
+  <meta property="og:description" content="Заказ автомобилей и мотоциклов под ключ. Прозрачное оформление на ваше имя, доставка по всей России." />
+  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -42,7 +46,7 @@
         <a href="#contacts">Контакты</a>
       </nav>
 
-      <a href="tel:+79000000000" class="header__phone">8 (900) 000-00-00</a>
+      <a href="tel:+79000000000" class="header__phone" data-setting="phone">8 (900) 000-00-00</a>
       <button class="btn btn--accent header__cta" data-modal-open data-subject="Заказать авто">Заказать авто</button>
 
       <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
@@ -56,8 +60,8 @@
     <div class="container hero__inner">
       <div class="hero__content">
         <p class="hero__eyebrow">Импорт под ключ · Владивосток → вся Россия</p>
-        <h1 class="hero__title">Авто и мото из <span>Японии, Кореи и Китая</span></h1>
-        <p class="hero__lead">Подбираем, покупаем, растаможиваем и доставляем автомобиль или мотоцикл на ваше имя. Без переплат посредникам — только себестоимость + фиксированная комиссия.</p>
+        <h1 class="hero__title" data-setting="heroTitle">Авто и мото из <span>Японии, Кореи и Китая</span></h1>
+        <p class="hero__lead" data-setting="heroLead">Подбираем, покупаем, растаможиваем и доставляем автомобиль или мотоцикл на ваше имя. Без переплат посредникам — только себестоимость + фиксированная комиссия.</p>
         <div class="hero__actions">
           <a class="btn btn--accent btn--lg" href="catalog.html">Смотреть каталог</a>
           <button class="btn btn--ghost btn--lg" data-modal-open data-subject="Заказать авто">Заказать авто</button>
@@ -256,47 +260,34 @@
       <p class="section__sub">Менеджеры по направлениям</p>
       <div class="contacts">
         <div class="contacts__groups">
-          <div class="acc">
+          <div class="acc" data-group="jp">
             <button class="acc__head" aria-expanded="true">🇯🇵 Менеджеры по Японии</button>
-            <div class="acc__body">
-              <a href="tel:+79000000001">8 (900) 000-00-01 · Павел</a>
-              <a href="tel:+79000000002">8 (900) 000-00-02 · Василий</a>
-              <a href="tel:+79000000003">8 (900) 000-00-03 · Сергей</a>
-            </div>
+            <div class="acc__body"></div>
           </div>
-          <div class="acc">
+          <div class="acc" data-group="kr">
             <button class="acc__head" aria-expanded="false">🇰🇷 Менеджеры по Корее</button>
-            <div class="acc__body">
-              <a href="tel:+79000000011">8 (900) 000-00-11 · Пётр</a>
-              <a href="tel:+79000000012">8 (900) 000-00-12 · Иван</a>
-            </div>
+            <div class="acc__body"></div>
           </div>
-          <div class="acc">
+          <div class="acc" data-group="cn">
             <button class="acc__head" aria-expanded="false">🇨🇳 Менеджеры по Китаю</button>
-            <div class="acc__body">
-              <a href="tel:+79000000021">8 (900) 000-00-21 · Роман</a>
-              <a href="tel:+79000000022">8 (900) 000-00-22 · Денис</a>
-            </div>
+            <div class="acc__body"></div>
           </div>
-          <div class="acc">
+          <div class="acc" data-group="moto">
             <button class="acc__head" aria-expanded="false">🏍️ Менеджеры по мотоциклам</button>
-            <div class="acc__body">
-              <a href="tel:+79000000031">8 (900) 000-00-31 · Глеб</a>
-              <a href="tel:+79000000032">8 (900) 000-00-32 · Михаил</a>
-            </div>
+            <div class="acc__body"></div>
           </div>
         </div>
 
         <div class="contacts__side">
           <div class="contacts__card">
             <h3>Офис</h3>
-            <p>г. Владивосток, ул. Днепровская, 21</p>
-            <p><a href="tel:+79000000000">8 (900) 000-00-00</a></p>
-            <p><a href="mailto:info@vihlyaev-auto.ru">info@vihlyaev-auto.ru</a></p>
+            <p data-setting="address">г. Владивосток, ул. Днепровская, 21</p>
+            <p><a href="tel:+79000000000" data-setting="phone">8 (900) 000-00-00</a></p>
+            <p><a href="mailto:info@vihlyaev-auto.ru" data-setting="email">info@vihlyaev-auto.ru</a></p>
             <div class="socials">
-              <a href="#" aria-label="YouTube">YouTube</a>
-              <a href="#" aria-label="Telegram">Telegram</a>
-              <a href="#" aria-label="VK">VK</a>
+              <a href="#" data-social="youtube" aria-label="YouTube">YouTube</a>
+              <a href="#" data-social="telegram" aria-label="Telegram">Telegram</a>
+              <a href="#" data-social="vk" aria-label="VK">VK</a>
             </div>
             <button class="btn btn--accent btn--block" data-modal-open data-subject="Оставить заявку">Оставить заявку</button>
           </div>
@@ -338,7 +329,8 @@
           <input type="checkbox" id="leadAgree" required />
           <span>Согласен на обработку персональных данных</span>
         </label>
-        <button type="submit" class="btn btn--accent btn--block btn--lg">Отправить заявку</button>
+        <p class="gate__err" id="leadErr" aria-live="polite"></p>
+        <button type="submit" class="btn btn--accent btn--block btn--lg" id="leadBtn">Отправить заявку</button>
         <p class="lead__ok" id="leadOk" hidden>Спасибо! Заявка принята — менеджер скоро свяжется с вами.</p>
       </form>
     </div>
@@ -364,6 +356,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
   <script src="config.js"></script>
+  <script src="settings.js"></script>
   <script src="cars.js"></script>
   <script src="db.js"></script>
   <script src="script.js"></script>

@@ -21,7 +21,7 @@ window.DB = (function () {
   const mode = client ? 'supabase' : 'local';
 
   /* ============ Локальное хранилище ============ */
-  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin' };
+  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings' };
   const read = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   const LOCAL_ADMIN = { login: 'admin', pass: 'vcar' }; // локальный вход на время отладки
@@ -118,16 +118,48 @@ window.DB = (function () {
     const { data } = await client.auth.getUser(); return data.user;
   }
 
-  /* ============ Экспорт каталога в cars.js ============ */
+  /* ============ Экспорт/импорт каталога ============ */
   function exportCarsFile() {
     const cars = (mode === 'local') ? seedCars() : (window.__lastCars || []);
     return 'window.CARS = ' + JSON.stringify(cars, null, 2) + ';\n';
+  }
+  // Импорт: принимает массив авто или текст cars.js (window.CARS = [...]).
+  async function importCars(input) {
+    let arr = input;
+    if (typeof input === 'string') {
+      const m = input.match(/=\s*(\[[\s\S]*\])\s*;?\s*$/);
+      arr = JSON.parse(m ? m[1] : input);
+    }
+    if (!Array.isArray(arr)) throw new Error('Ожидался массив авто');
+    const norm = arr.map(x => Object.assign({ status: 'order', featured: false, photos: [] }, x));
+    if (mode === 'local') { write(LS.cars, norm); return norm.length; }
+    for (const c of norm) await saveCar(c);
+    return norm.length;
+  }
+
+  /* ============ Настройки сайта ============ */
+  function getSettings() {
+    const defaults = window.SITE_SETTINGS || {};
+    const saved = read(LS.settings, null);
+    // Глубокое слияние верхнего уровня + вложенных socials/managers.
+    if (!saved) return JSON.parse(JSON.stringify(defaults));
+    return Object.assign({}, defaults, saved, {
+      socials: Object.assign({}, defaults.socials, saved.socials),
+      managers: Object.assign({}, defaults.managers, saved.managers)
+    });
+  }
+  function saveSettings(obj) { write(LS.settings, obj); return obj; }
+  function resetSettings() { localStorage.removeItem(LS.settings); }
+  function exportSettingsFile() {
+    return 'window.SITE_SETTINGS = ' + JSON.stringify(getSettings(), null, 2) + ';\n';
   }
 
   return {
     mode, enabled: true,
     getCars, saveCar, deleteCar, uploadPhoto,
     submitLead, submitFeedback, listLeads, listFeedback,
-    signIn, signOut, currentUser, exportCarsFile
+    signIn, signOut, currentUser,
+    exportCarsFile, importCars,
+    getSettings, saveSettings, resetSettings, exportSettingsFile
   };
 })();

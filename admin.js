@@ -64,7 +64,8 @@
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin__tab').forEach(t => t.classList.remove('is-active'));
       tab.classList.add('is-active');
-      ['cars', 'leads', 'feedback'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
+      ['cars', 'leads', 'feedback', 'settings'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
+      if (tab.dataset.tab === 'settings') loadSettings();
     });
   });
 
@@ -74,21 +75,35 @@
 
   async function loadCars() {
     cars = await window.DB.getCars();
-    $('carsCount').textContent = cars.length;
-    $('carsBody').innerHTML = cars.map(c => `
+    renderCars();
+  }
+
+  function renderCars() {
+    const q = ($('carsSearch').value || '').trim().toLowerCase();
+    let list = cars.filter(c => !q || (c.brand + ' ' + c.model + ' ' + (c.body || '')).toLowerCase().includes(q));
+    switch ($('carsSort').value) {
+      case 'priceDesc': list = list.slice().sort((a, b) => b.price - a.price); break;
+      case 'priceAsc': list = list.slice().sort((a, b) => a.price - b.price); break;
+      case 'brand': list = list.slice().sort((a, b) => (a.brand + a.model).localeCompare(b.brand + b.model, 'ru')); break;
+    }
+    $('carsCount').textContent = list.length + (list.length !== cars.length ? ' / ' + cars.length : '');
+    $('carsBody').innerHTML = list.map(c => `
       <tr>
         <td>${c.photos && c.photos[0] ? `<img class="admin__thumb" src="${c.photos[0]}" alt="">` : '<span class="admin__thumb admin__thumb--empty"></span>'}</td>
-        <td><b>${c.brand}</b> ${c.model}${c.featured ? ' ⭐' : ''}</td>
+        <td><b>${esc(c.brand)}</b> ${esc(c.model)}${c.featured ? ' ⭐' : ''}</td>
         <td>${c.year || ''}</td>
         <td>${COUNTRY[c.country] || c.country || ''}</td>
         <td>${rub(c.price)}</td>
         <td><span class="badge badge--${c.status || 'order'}">${STATUS[c.status] || 'Под заказ'}</span></td>
         <td class="admin__row-actions">
-          <button class="btn btn--ghost btn--sm" data-edit="${c.id}">✎</button>
-          <button class="btn btn--ghost btn--sm" data-del="${c.id}">🗑</button>
+          <button class="btn btn--ghost btn--sm" data-edit="${c.id}" title="Редактировать">✎</button>
+          <button class="btn btn--ghost btn--sm" data-dup="${c.id}" title="Дублировать">⧉</button>
+          <button class="btn btn--ghost btn--sm" data-del="${c.id}" title="Удалить">🗑</button>
         </td>
-      </tr>`).join('');
+      </tr>`).join('') || '<tr><td colspan="7" class="admin__empty">Ничего не найдено</td></tr>';
   }
+  $('carsSearch').addEventListener('input', renderCars);
+  $('carsSort').addEventListener('change', renderCars);
 
   async function loadLeads() {
     try {
@@ -160,8 +175,14 @@
 
   $('carsBody').addEventListener('click', async e => {
     const edit = e.target.closest('[data-edit]');
+    const dup = e.target.closest('[data-dup]');
     const del = e.target.closest('[data-del]');
     if (edit) openEdit(cars.find(c => c.id === edit.dataset.edit));
+    if (dup) {
+      const src = cars.find(c => c.id === dup.dataset.dup);
+      const copy = Object.assign({}, src, { id: 'c' + Date.now(), model: src.model + ' (копия)' });
+      openEdit(copy);
+    }
     if (del) {
       const car = cars.find(c => c.id === del.dataset.del);
       if (confirm(`Удалить ${car.brand} ${car.model}?`)) {
@@ -189,6 +210,64 @@
     try { await window.DB.saveCar(car); closeEdit(); loadCars(); }
     catch (err) { $('editErr').textContent = 'Ошибка сохранения: ' + (err.message || err); }
   });
+
+  /* ---------- Import ---------- */
+  $('importBtn').addEventListener('click', () => $('importFile').click());
+  $('importFile').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      if (!confirm('Импорт заменит текущий каталог. Продолжить?')) { e.target.value = ''; return; }
+      const n = await window.DB.importCars(text);
+      await loadCars();
+      alert('Импортировано авто: ' + n);
+    } catch (err) { alert('Ошибка импорта: ' + (err.message || err)); }
+    e.target.value = '';
+  });
+
+  /* ---------- Settings ---------- */
+  const linesToArr = t => t.split('\n').map(s => s.trim()).filter(Boolean);
+  const arrToLines = a => (a || []).join('\n');
+
+  function loadSettings() {
+    const s = window.DB.getSettings();
+    $('setBrand').value = s.brand || ''; $('setPhone').value = s.phone || '';
+    $('setEmail').value = s.email || ''; $('setAddress').value = s.address || '';
+    $('setHeroTitle').value = s.heroTitle || ''; $('setHeroLead').value = s.heroLead || '';
+    $('setYoutube').value = s.socials?.youtube || ''; $('setTelegram').value = s.socials?.telegram || ''; $('setVk').value = s.socials?.vk || '';
+    $('setMgrJp').value = arrToLines(s.managers?.jp); $('setMgrKr').value = arrToLines(s.managers?.kr);
+    $('setMgrCn').value = arrToLines(s.managers?.cn); $('setMgrMoto').value = arrToLines(s.managers?.moto);
+  }
+  function collectSettings() {
+    return {
+      brand: $('setBrand').value.trim(), phone: $('setPhone').value.trim(),
+      email: $('setEmail').value.trim(), address: $('setAddress').value.trim(),
+      heroTitle: $('setHeroTitle').value.trim(), heroLead: $('setHeroLead').value.trim(),
+      socials: { youtube: $('setYoutube').value.trim(), telegram: $('setTelegram').value.trim(), vk: $('setVk').value.trim() },
+      managers: { jp: linesToArr($('setMgrJp').value), kr: linesToArr($('setMgrKr').value), cn: linesToArr($('setMgrCn').value), moto: linesToArr($('setMgrMoto').value) }
+    };
+  }
+  $('saveSettingsBtn').addEventListener('click', () => {
+    window.DB.saveSettings(collectSettings());
+    $('settingsOk').hidden = false;
+    setTimeout(() => $('settingsOk').hidden = true, 2600);
+  });
+  $('resetSettingsBtn').addEventListener('click', () => {
+    if (confirm('Сбросить настройки к значениям по умолчанию?')) { window.DB.resetSettings(); loadSettings(); }
+  });
+  $('exportSettingsBtn').addEventListener('click', () => {
+    window.DB.saveSettings(collectSettings());
+    download('settings.js', window.DB.exportSettingsFile(), 'text/javascript');
+  });
+
+  function download(name, text, type) {
+    const blob = new Blob([text], { type: (type || 'text/plain') + ';charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
 
   refreshAuth();
 })();

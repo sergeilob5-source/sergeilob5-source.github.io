@@ -1,5 +1,34 @@
 'use strict';
 
+/* ===== Apply site settings (phone, hero, contacts, socials) ===== */
+(function applySettings() {
+  if (!window.DB || !window.DB.getSettings) return;
+  const s = window.DB.getSettings();
+  const telHref = str => 'tel:+' + String(str).replace(/\D/g, '');
+
+  document.querySelectorAll('[data-setting]').forEach(el => {
+    const key = el.dataset.setting;
+    const val = s[key];
+    if (val == null) return;
+    if (key === 'phone') { el.textContent = val; el.href = telHref(val); }
+    else if (key === 'email') { el.textContent = val; el.href = 'mailto:' + val; }
+    else if (key === 'heroTitle') { el.textContent = val; }
+    else { el.textContent = val; }
+  });
+
+  if (s.socials) document.querySelectorAll('[data-social]').forEach(a => {
+    const u = s.socials[a.dataset.social];
+    if (u) a.href = u;
+  });
+
+  if (s.managers) document.querySelectorAll('.acc[data-group]').forEach(acc => {
+    const list = s.managers[acc.dataset.group] || [];
+    const body = acc.querySelector('.acc__body');
+    if (body) body.innerHTML = list.map(line =>
+      `<a href="${telHref(line)}">${line}</a>`).join('');
+  });
+})();
+
 /* ===== Mobile nav ===== */
 const burger = document.getElementById('burger');
 const nav = document.getElementById('nav');
@@ -118,10 +147,14 @@ leadForm.addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('leadName');
   const agree = document.getElementById('leadAgree');
+  const err = document.getElementById('leadErr');
+  const btn = document.getElementById('leadBtn');
   const digits = phone.value.replace(/\D/g, '');
-  if (!name.value.trim()) { name.focus(); return; }
-  if (digits.length < 11) { phone.focus(); return; }
-  if (!agree.checked) { agree.focus(); return; }
+  const fail = (msg, el) => { err.textContent = msg; if (el) el.focus(); };
+  err.textContent = '';
+  if (!name.value.trim()) return fail('Введите имя', name);
+  if (digits.length < 11) return fail('Введите телефон полностью', phone);
+  if (!agree.checked) return fail('Нужно согласие на обработку данных', agree);
 
   const payload = {
     subject: leadSubject.value,
@@ -132,14 +165,16 @@ leadForm.addEventListener('submit', e => {
 
   const fields = leadForm.querySelectorAll('input,textarea,button');
   fields.forEach(el => { if (el.type !== 'hidden') el.disabled = true; });
-  // Отправка через слой данных (Supabase, либо console.log-фолбэк).
+  const btnText = btn.textContent; btn.textContent = 'Отправляю…';
+  // Отправка через слой данных (localStorage/Supabase).
   (window.DB ? window.DB.submitLead(payload) : Promise.resolve()).finally(() => {
     document.getElementById('leadOk').hidden = false;
     setTimeout(() => {
       leadForm.reset();
       fields.forEach(el => el.disabled = false);
+      btn.textContent = btnText;
       closeModal();
-    }, 2200);
+    }, 2000);
   });
 });
 

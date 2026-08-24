@@ -37,6 +37,7 @@
       <button class="admin__tab is-active" data-tab="cars">Авто</button>
       <button class="admin__tab" data-tab="leads">Заявки</button>
       <button class="admin__tab" data-tab="feedback">Отзывы</button>
+      <button class="admin__tab" data-tab="settings">Настройки</button>
     </nav>
 
     <!-- Cars tab -->
@@ -44,6 +45,15 @@
       <div class="admin__bar">
         <h2>Автомобили <span id="carsCount" class="admin__count"></span></h2>
         <div class="admin__bar-btns">
+          <input type="search" id="carsSearch" class="filters__input admin__search" placeholder="Поиск: марка, модель…" />
+          <select id="carsSort" class="filters__input">
+            <option value="new">новые сверху</option>
+            <option value="priceDesc">цена ↓</option>
+            <option value="priceAsc">цена ↑</option>
+            <option value="brand">марка А–Я</option>
+          </select>
+          <input type="file" id="importFile" accept=".js,.json,application/json,text/javascript" hidden />
+          <button class="btn btn--ghost" id="importBtn" title="Загрузить cars.js / JSON">⬆ Импорт</button>
           <button class="btn btn--ghost" id="exportBtn" title="Скачать cars.js для коммита в GitHub">⬇ Экспорт cars.js</button>
           <button class="btn btn--accent" id="addCarBtn">+ Добавить авто</button>
         </div>
@@ -73,6 +83,45 @@
         <table class="admin__table"><thead><tr><th>Дата</th><th>Сообщение</th><th>Контакт</th><th>Страница</th></tr></thead>
           <tbody id="fbBody"></tbody></table>
       </div>
+    </section>
+
+    <!-- Settings tab -->
+    <section class="admin__pane" id="tab-settings" hidden>
+      <div class="admin__bar">
+        <h2>Настройки сайта</h2>
+        <div class="admin__bar-btns">
+          <button class="btn btn--ghost" id="resetSettingsBtn">Сбросить к умолчанию</button>
+          <button class="btn btn--ghost" id="exportSettingsBtn">⬇ Экспорт settings.js</button>
+          <button class="btn btn--accent" id="saveSettingsBtn">Сохранить</button>
+        </div>
+      </div>
+      <p class="admin__hint">Меняет тексты и контакты на сайте (шапка, герой, блок контактов). Хранится локально; чтобы увидели все через GitHub — «Экспорт settings.js» → заменить файл → запушить.</p>
+      <form id="settingsForm" class="admin__form">
+        <h3 class="admin__subh">Основное</h3>
+        <div class="admin__grid">
+          <div class="field"><label>Название</label><input id="setBrand" /></div>
+          <div class="field"><label>Телефон</label><input id="setPhone" /></div>
+          <div class="field"><label>Email</label><input id="setEmail" /></div>
+          <div class="field"><label>Адрес</label><input id="setAddress" /></div>
+        </div>
+        <h3 class="admin__subh">Главный экран</h3>
+        <div class="field"><label>Заголовок героя</label><input id="setHeroTitle" /></div>
+        <div class="field"><label>Подзаголовок героя</label><textarea id="setHeroLead" rows="2"></textarea></div>
+        <h3 class="admin__subh">Соцсети (ссылки)</h3>
+        <div class="admin__grid">
+          <div class="field"><label>YouTube</label><input id="setYoutube" /></div>
+          <div class="field"><label>Telegram</label><input id="setTelegram" /></div>
+          <div class="field"><label>VK</label><input id="setVk" /></div>
+        </div>
+        <h3 class="admin__subh">Менеджеры — по строке на человека, формат «телефон · имя»</h3>
+        <div class="admin__grid">
+          <div class="field"><label>🇯🇵 Япония</label><textarea id="setMgrJp" rows="4"></textarea></div>
+          <div class="field"><label>🇰🇷 Корея</label><textarea id="setMgrKr" rows="4"></textarea></div>
+          <div class="field"><label>🇨🇳 Китай</label><textarea id="setMgrCn" rows="4"></textarea></div>
+          <div class="field"><label>🏍️ Мото</label><textarea id="setMgrMoto" rows="4"></textarea></div>
+        </div>
+        <p class="fb__ok" id="settingsOk" hidden>Сохранено. Обновите сайт, чтобы увидеть изменения.</p>
+      </form>
     </section>
   </div>
 
@@ -125,6 +174,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
+  <script src="settings.js"></script>
   <script src="cars.js"></script>
   <script src="db.js"></script>
   <script src="admin.js"></script>

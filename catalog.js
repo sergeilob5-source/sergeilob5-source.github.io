@@ -2,16 +2,34 @@
 /* Каталог: рендер, фильтры, сортировка, детальная карточка.
    Данные из Supabase (window.DB), фолбэк — window.CARS */
 (async function () {
+  const grid = document.getElementById('grid');
+  const countEl = document.getElementById('count');
+  const emptyEl = document.getElementById('empty');
+
+  // Индикатор загрузки, пока тянем данные.
+  grid.innerHTML = '<div class="loading"><span class="loading__spin"></span> Загружаем каталог…</div>';
+
   const CARS = window.DB ? await window.DB.getCars() : (window.CARS || []);
   const COUNTRY = { jp: '🇯🇵 Япония', kr: '🇰🇷 Корея', cn: '🇨🇳 Китай' };
   const STATUS = { order: 'Под заказ', in_stock: 'В наличии', sold: 'Продано' };
   const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-  const km = n => new Intl.NumberFormat('ru-RU').format(n) + ' км';
-  const engTxt = c => c.engine ? c.engine.toFixed(1) + ' л · ' + c.fuel : c.fuel;
+  const km = n => n ? new Intl.NumberFormat('ru-RU').format(n) + ' км' : '—';
+  const engTxt = c => c.engine ? (+c.engine).toFixed(1) + ' л · ' + c.fuel : c.fuel;
 
-  const grid = document.getElementById('grid');
-  const countEl = document.getElementById('count');
-  const emptyEl = document.getElementById('empty');
+  /* --- Избранное (localStorage) --- */
+  const FAV_KEY = 'vcar_fav';
+  const favSet = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
+  const saveFav = () => localStorage.setItem(FAV_KEY, JSON.stringify([...favSet]));
+  let favOnly = false;
+
+  /* --- Toast --- */
+  let toastTimer;
+  function toast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
 
   const F = {
     search: document.getElementById('fSearch'),
@@ -41,6 +59,7 @@
     const yMax = +F.yearMax.value || Infinity;
 
     let list = CARS.filter(c => {
+      if (favOnly && !favSet.has(c.id)) return false;
       if (country && c.country !== country) return false;
       if (F.brand.value && c.brand !== F.brand.value) return false;
       if (F.body.value && c.body !== F.body.value) return false;
@@ -77,6 +96,7 @@
           <span class="car__badge">${c.year || ''}</span>
           ${c.featured ? '<span class="car__hit">Хит</span>' : ''}
           ${c.status && c.status !== 'order' ? `<span class="car__status car__status--${c.status}">${STATUS[c.status]}</span>` : ''}
+          <button class="car__fav${favSet.has(c.id) ? ' is-on' : ''}" data-fav="${c.id}" title="В избранное" aria-label="В избранное">${favSet.has(c.id) ? '★' : '☆'}</button>
         </div>
         <div class="car__body">
           <h3 class="car__title">${c.brand} ${c.model}</h3>
@@ -136,7 +156,10 @@
             <tr><td>Пробег</td><td>${km(c.mileage)}</td></tr>
             <tr><td>Аукцион</td><td>${c.auction || '—'}</td></tr>
           </table>
-          <button class="btn btn--accent btn--lg btn--block" id="orderThis">Заказать это авто</button>
+          <div class="detail__actions">
+            <button class="btn btn--accent btn--lg" id="orderThis">Заказать это авто</button>
+            <button class="btn btn--ghost btn--lg" id="shareThis">🔗 Поделиться</button>
+          </div>
           <p class="detail__note">Актуальные лоты и точную цену подтвердит менеджер. Фото — по запросу с аукционного листа.</p>
         </div>
       </div>`;
@@ -145,6 +168,14 @@
     document.getElementById('orderThis').addEventListener('click', () => {
       closeCar();
       if (window.openModal) window.openModal('Заказ: ' + c.brand + ' ' + c.model + (c.year ? ' ' + c.year : ''));
+    });
+    document.getElementById('shareThis').addEventListener('click', async () => {
+      const link = location.origin + location.pathname + '?car=' + c.id;
+      const title = c.brand + ' ' + c.model + (c.year ? ' ' + c.year : '');
+      try {
+        if (navigator.share) { await navigator.share({ title, url: link }); }
+        else { await navigator.clipboard.writeText(link); toast('Ссылка скопирована'); }
+      } catch (err) { /* пользователь отменил — молчим */ }
     });
     const thumbsEl = carDetail.querySelector('.detail__thumbs');
     if (thumbsEl) thumbsEl.addEventListener('click', e => {
@@ -163,8 +194,27 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !carModal.hidden) closeCar(); });
 
   grid.addEventListener('click', e => {
+    const fav = e.target.closest('[data-fav]');
+    if (fav) {
+      e.stopPropagation();
+      const id = fav.dataset.fav;
+      if (favSet.has(id)) { favSet.delete(id); toast('Убрано из избранного'); }
+      else { favSet.add(id); toast('Добавлено в избранное'); }
+      saveFav();
+      apply();
+      return;
+    }
     const btn = e.target.closest('.car__more') || e.target.closest('.car');
     if (btn) openCar(btn.dataset.id);
+  });
+
+  /* --- Favorites toggle --- */
+  const favToggle = document.getElementById('favToggle');
+  favToggle.addEventListener('click', () => {
+    favOnly = !favOnly;
+    favToggle.classList.toggle('is-active', favOnly);
+    favToggle.textContent = (favOnly ? '★' : '☆') + ' Избранное';
+    apply();
   });
 
   /* --- Country chips --- */
@@ -188,7 +238,7 @@
     apply();
   });
 
-  /* --- Deep link: catalog.html?country=jp --- */
+  /* --- Deep link: ?country=jp, ?car=id --- */
   const params = new URLSearchParams(location.search);
   if (params.get('country') && COUNTRY[params.get('country')]) {
     country = params.get('country');
@@ -196,4 +246,9 @@
   }
 
   apply();
+
+  if (params.get('car')) {
+    const target = CARS.find(c => c.id === params.get('car'));
+    if (target) openCar(target.id);
+  }
 })();

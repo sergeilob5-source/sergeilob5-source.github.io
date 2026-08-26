@@ -61,7 +61,7 @@ img{max-width:100%;display:block}
 }
 .logo__text{font-size:1.05rem}
 .logo__text b{color:var(--accent);font-weight:800}
-.logo__img{height:44px;width:auto;display:block}
+.logo__img{height:54px;width:auto;display:block;border-radius:8px}
 .logo--has-img .logo__mark,.logo--has-img .logo__text{display:none}
 .nav{display:flex;gap:1.4rem;margin-left:auto}
 .nav a{color:var(--muted);font-size:.95rem;font-weight:500;transition:color .18s}

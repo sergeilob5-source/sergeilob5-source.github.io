@@ -15,6 +15,7 @@
   const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
   const km = n => n ? new Intl.NumberFormat('ru-RU').format(n) + ' км' : '—';
   const engTxt = c => c.engine ? (+c.engine).toFixed(1) + ' л · ' + c.fuel : c.fuel;
+  const autoDesc = c => c.desc || `${c.brand} ${c.model}${c.year ? ' ' + c.year : ''} — ${c.body || 'авто'}, ${engTxt(c)}, пробег ${km(c.mileage)}. Проверенное авто из страны, поставка под ключ на ваше имя.`;
 
   /* --- Избранное (localStorage) --- */
   const FAV_KEY = 'vcar_fav';
@@ -100,6 +101,7 @@
         </div>
         <div class="car__body">
           <h3 class="car__title">${c.brand} ${c.model}</h3>
+          <p class="car__desc">${autoDesc(c)}</p>
           <ul class="car__specs">
             <li>${c.body}</li><li>${engTxt(c)}</li>
             <li>${c.drive}</li><li>${km(c.mileage)}</li>
@@ -146,6 +148,7 @@
         <div class="detail__info">
           <h3 class="detail__title">${c.brand} ${c.model}${c.year ? ', ' + c.year : ''}</h3>
           <div class="detail__price">${rub(c.price)} <small>под ключ, ориентировочно</small></div>
+          <p class="detail__desc">${autoDesc(c)}</p>
           <table class="detail__table">
             <tr><td>Страна</td><td>${COUNTRY[c.country] || '—'}</td></tr>
             <tr><td>Статус</td><td>${STATUS[c.status] || 'Под заказ'}</td></tr>

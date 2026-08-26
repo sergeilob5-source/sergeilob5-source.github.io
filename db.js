@@ -21,7 +21,7 @@ window.DB = (function () {
   const mode = client ? 'supabase' : 'local';
 
   /* ============ Локальное хранилище ============ */
-  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings' };
+  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings', feed: 'vcar_feed' };
   const read = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   const LOCAL_ADMIN = { login: 'admin', pass: 'vcar' }; // локальный вход на время отладки
@@ -68,6 +68,37 @@ window.DB = (function () {
     const up = await client.storage.from('car-photos').upload(name, file, { cacheControl: '3600', upsert: false });
     if (up.error) throw up.error;
     return client.storage.from('car-photos').getPublicUrl(name).data.publicUrl;
+  }
+
+  /* ============ Лента поступлений ============ */
+  function seedFeed() {
+    let f = read(LS.feed, null);
+    if (!f) { f = (window.FEED || []).map(x => Object.assign({ published: true, photos: [] }, x)); write(LS.feed, f); }
+    return f;
+  }
+  async function getFeed() {
+    if (mode === 'local') return seedFeed().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const { data, error } = await client.from('feed').select('*').order('date', { ascending: false });
+    if (error) { console.warn('[DB] getFeed:', error.message); return (window.FEED || []); }
+    return data || [];
+  }
+  async function saveFeedItem(item) {
+    if (mode === 'local') {
+      const list = seedFeed();
+      const i = list.findIndex(x => x.id === item.id);
+      if (i >= 0) list[i] = item; else list.unshift(item);
+      write(LS.feed, list); return item;
+    }
+    const { data, error } = await client.from('feed').upsert(item).select();
+    if (error) throw error; return data[0];
+  }
+  async function deleteFeedItem(id) {
+    if (mode === 'local') { write(LS.feed, seedFeed().filter(x => x.id !== id)); return; }
+    const { error } = await client.from('feed').delete().eq('id', id);
+    if (error) throw error;
+  }
+  function exportFeedFile() {
+    return 'window.FEED = ' + JSON.stringify(seedFeed(), null, 2) + ';\n';
   }
 
   /* ============ Заявки ============ */
@@ -160,6 +191,7 @@ window.DB = (function () {
     submitLead, submitFeedback, listLeads, listFeedback,
     signIn, signOut, currentUser,
     exportCarsFile, importCars,
+    getFeed, saveFeedItem, deleteFeedItem, exportFeedFile,
     getSettings, saveSettings, resetSettings, exportSettingsFile
   };
 })();

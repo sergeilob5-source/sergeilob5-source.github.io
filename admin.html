@@ -35,6 +35,7 @@
 
     <nav class="admin__tabs">
       <button class="admin__tab is-active" data-tab="cars">Авто</button>
+      <button class="admin__tab" data-tab="feed">Лента</button>
       <button class="admin__tab" data-tab="leads">Заявки</button>
       <button class="admin__tab" data-tab="feedback">Отзывы</button>
       <button class="admin__tab" data-tab="settings">Настройки</button>
@@ -64,6 +65,22 @@
           <thead><tr><th>Фото</th><th>Марка / модель</th><th>Год</th><th>Страна</th><th>Цена</th><th>Статус</th><th></th></tr></thead>
           <tbody id="carsBody"></tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- Feed tab -->
+    <section class="admin__pane" id="tab-feed" hidden>
+      <div class="admin__bar">
+        <h2>Лента поступлений <span id="feedCount" class="admin__count"></span></h2>
+        <div class="admin__bar-btns">
+          <button class="btn btn--ghost" id="exportFeedBtn" title="Скачать feed.js для коммита">⬇ Экспорт feed.js</button>
+          <button class="btn btn--accent" id="addFeedBtn">+ Добавить запись</button>
+        </div>
+      </div>
+      <p class="admin__hint">Новые записи автопостятся в Telegram/VK при пуше feed.js (см. AUTOPOST-SETUP.md).</p>
+      <div class="admin__table-wrap">
+        <table class="admin__table"><thead><tr><th>Дата</th><th>Заголовок</th><th>Страна</th><th>Цена</th><th></th></tr></thead>
+          <tbody id="feedBody"></tbody></table>
       </div>
     </section>
 
@@ -154,6 +171,8 @@
         </div>
         <label class="checkbox"><input type="checkbox" id="cFeatured" /><span>Отметить как «хит/новинка»</span></label>
 
+        <div class="field"><label>Описание</label><textarea id="cDesc" rows="3" placeholder="Короткое описание авто для карточки"></textarea></div>
+
         <div class="field">
           <label>Фото</label>
           <input type="file" id="cPhotoFile" accept="image/*" multiple />
@@ -169,6 +188,38 @@
     </div>
   </div>
 
+  <!-- ===== Feed edit modal ===== -->
+  <div class="modal" id="feedEdit" hidden>
+    <div class="modal__overlay" data-feed-close></div>
+    <div class="modal__box modal__box--wide" role="dialog" aria-modal="true">
+      <button class="modal__close" data-feed-close aria-label="Закрыть">×</button>
+      <h3 id="feedTitle">Запись ленты</h3>
+      <form id="feedForm" class="admin__form">
+        <input type="hidden" id="fId" />
+        <div class="admin__grid">
+          <div class="field"><label>Дата</label><input id="fDate" type="date" required /></div>
+          <div class="field"><label>Страна</label>
+            <select id="fCountry"><option value="jp">Япония</option><option value="kr">Корея</option><option value="cn">Китай</option></select></div>
+          <div class="field"><label>Цена, ₽</label><input id="fPrice" type="number" min="0" /></div>
+        </div>
+        <div class="field"><label>Заголовок</label><input id="fTitle" required placeholder="Honda Freed Hybrid, 2 поколение (2019)" /></div>
+        <div class="field"><label>Характеристики (одной строкой)</label><input id="fSpecs" placeholder="1.5 л · гибрид · CVT · 7 мест · 41 000 км" /></div>
+        <div class="field"><label>Описание</label><textarea id="fBody" rows="4" placeholder="Короткое описание поступления"></textarea></div>
+        <label class="checkbox"><input type="checkbox" id="fPublished" checked /><span>Опубликовано (видно на сайте)</span></label>
+        <div class="field">
+          <label>Фото</label>
+          <input type="file" id="fPhotoFile" accept="image/*" multiple />
+          <div class="admin__photos" id="fPhotos"></div>
+        </div>
+        <p class="gate__err" id="feedErr"></p>
+        <div class="admin__form-actions">
+          <button type="submit" class="btn btn--accent btn--lg">Сохранить</button>
+          <button type="button" class="btn btn--ghost" data-feed-close>Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <datalist id="bodyList"><option>Седан</option><option>Кроссовер</option><option>Внедорожник</option><option>Минивэн</option><option>Хэтчбек</option><option>Универсал</option><option>Лифтбек</option></datalist>
   <datalist id="fuelList"><option>Бензин</option><option>Дизель</option><option>Гибрид</option><option>Электро</option></datalist>
 
@@ -176,6 +227,7 @@
   <script src="config.js"></script>
   <script src="settings.js"></script>
   <script src="cars.js"></script>
+  <script src="feed.js"></script>
   <script src="db.js"></script>
   <script src="admin.js"></script>
 </body>

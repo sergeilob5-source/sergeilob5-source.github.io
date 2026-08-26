@@ -62,6 +62,29 @@ document.querySelectorAll('.acc__head').forEach(head => {
   });
 });
 
+/* ===== Country accordions (landing) ===== */
+document.querySelectorAll('.country__head').forEach(head => {
+  const body = head.nextElementSibling;
+  if (head.getAttribute('aria-expanded') === 'true') body.style.maxHeight = body.scrollHeight + 'px';
+  head.addEventListener('click', () => {
+    const open = head.getAttribute('aria-expanded') === 'true';
+    head.setAttribute('aria-expanded', String(!open));
+    body.style.maxHeight = open ? '0' : body.scrollHeight + 'px';
+  });
+});
+
+/* ===== Info tabs ===== */
+const infoTabs = document.getElementById('infoTabs');
+if (infoTabs) {
+  infoTabs.querySelectorAll('.info-tabs__btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      infoTabs.querySelectorAll('.info-tabs__btn').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      infoTabs.querySelectorAll('.info-tabs__pane').forEach(p => p.hidden = (p.dataset.pane !== btn.dataset.tab));
+    });
+  });
+}
+
 /* ===== Modal (lead form) ===== */
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modalTitle');

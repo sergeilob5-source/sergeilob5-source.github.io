@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'cars.js'
+      - 'feed.js'
   workflow_dispatch: {}   # можно запустить вручную из вкладки Actions
 
 permissions:

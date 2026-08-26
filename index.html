@@ -40,6 +40,7 @@
 
       <nav class="nav" id="nav">
         <a href="catalog.html">Каталог</a>
+        <a href="feed.html">Поступления</a>
         <a href="#advantages">Преимущества</a>
         <a href="#stages">Этапы</a>
         <a href="#calc">Калькулятор</a>
@@ -120,6 +121,43 @@
     </div>
   </section>
 
+  <!-- ===== Countries ===== -->
+  <section class="section" id="countries">
+    <div class="container">
+      <h2 class="section__title">Откуда возим</h2>
+      <p class="section__sub">Нажмите на страну — преимущества и популярные модели</p>
+      <div class="countries">
+        <div class="country">
+          <button class="country__head" aria-expanded="true">🇯🇵 Япония</button>
+          <div class="country__body">
+            <div class="country__inner">
+              <p>Честный пробег и аукционные листы, богатые комплектации, надёжные гибриды. Минимальные риски по техническому состоянию.</p>
+              <div class="country__models"><span>Toyota Corolla Fielder</span><span>Honda Freed</span><span>Honda Vezel</span><span>Nissan Note e-POWER</span><span>Toyota Alphard</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="country">
+          <button class="country__head" aria-expanded="false">🇰🇷 Корея</button>
+          <div class="country__body">
+            <div class="country__inner">
+              <p>Свежие седаны и кроссоверы, дизели и премиум (Genesis). Хорошее оснащение за разумные деньги, аукцион Encar.</p>
+              <div class="country__models"><span>Kia K5</span><span>Hyundai Santa Fe</span><span>Kia Sorento</span><span>Genesis G80</span><span>Kia Carnival</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="country">
+          <button class="country__head" aria-expanded="false">🇨🇳 Китай</button>
+          <div class="country__body">
+            <div class="country__inner">
+              <p>Современные электромобили и гибриды, новые технологии, выгодная цена. Большой выбор свежих авто с малым пробегом.</p>
+              <div class="country__models"><span>BYD Han</span><span>Zeekr 001</span><span>Li L7</span><span>Geely Monjaro</span><span>Tank 300</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Stages ===== -->
   <section class="section section--alt" id="stages">
     <div class="container">
@@ -195,6 +233,55 @@
           <div class="calc__total"><span>Итого под ключ</span><b id="rTotal">—</b></div>
           <p class="calc__note">Расчёт предварительный. Точную стоимость подтвердит менеджер после подбора авто.</p>
           <button class="btn btn--accent" data-modal-open data-subject="Заявка после расчёта">Получить точный расчёт</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Info tabs ===== -->
+  <section class="section" id="info">
+    <div class="container">
+      <h2 class="section__title">Как мы работаем</h2>
+      <p class="section__sub">Условия, сроки и документы — коротко и по делу</p>
+      <div class="info-tabs" id="infoTabs">
+        <div class="info-tabs__nav">
+          <button class="info-tabs__btn is-active" data-tab="cond">Условия</button>
+          <button class="info-tabs__btn" data-tab="desc">Описания</button>
+          <button class="info-tabs__btn" data-tab="spec">Характеристики</button>
+          <button class="info-tabs__btn" data-tab="term">Сроки</button>
+          <button class="info-tabs__btn" data-tab="doc">Договоры</button>
+        </div>
+        <div class="info-tabs__pane" data-pane="cond">
+          <h3>Условия</h3>
+          <ul>
+            <li>Оплата частями: депозит → стоимость авто → таможенные платежи.</li>
+            <li>Цена «под ключ» — себестоимость + фиксированная комиссия, без скрытых наценок.</li>
+            <li>Можно купить дешевле бюджета, но не дороже согласованного.</li>
+          </ul>
+        </div>
+        <div class="info-tabs__pane" data-pane="desc" hidden>
+          <h3>Описания</h3>
+          <p>По каждому авто предоставляем аукционный лист, фото и честный пробег. Подбираем варианты под ваш бюджет и требования по поколению и комплектации.</p>
+        </div>
+        <div class="info-tabs__pane" data-pane="spec" hidden>
+          <h3>Характеристики</h3>
+          <p>Указываем объём двигателя, тип топлива, привод, КПП, пробег, год и поколение. Разные поколения (например Honda Freed 2010–2019) публикуем отдельными записями в ленте поступлений.</p>
+        </div>
+        <div class="info-tabs__pane" data-pane="term" hidden>
+          <h3>Сроки</h3>
+          <ul>
+            <li>Подбор — от нескольких дней (ежедневно присылаем варианты).</li>
+            <li>Доставка до Владивостока — в среднем 2–4 недели после покупки.</li>
+            <li>Таможенное оформление — 3–5 дней после прибытия в порт.</li>
+          </ul>
+        </div>
+        <div class="info-tabs__pane" data-pane="doc" hidden>
+          <h3>Договоры</h3>
+          <ul>
+            <li>Работаем по официальному агентскому договору.</li>
+            <li>Все документы оформляются на ваше имя по законодательству РФ.</li>
+            <li>Инвойс, платежи через проверенных партнёров, пошаговая отчётность.</li>
+          </ul>
         </div>
       </div>
     </div>

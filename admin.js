@@ -64,8 +64,9 @@
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin__tab').forEach(t => t.classList.remove('is-active'));
       tab.classList.add('is-active');
-      ['cars', 'leads', 'feedback', 'settings'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
+      ['cars', 'feed', 'leads', 'feedback', 'settings'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
       if (tab.dataset.tab === 'settings') loadSettings();
+      if (tab.dataset.tab === 'feed') loadFeed();
     });
   });
 
@@ -145,6 +146,7 @@
     $('cPrice').value = car.price ?? ''; $('cAuction').value = car.auction || '';
     $('cStatus').value = car.status || 'order'; $('cColor').value = car.color || '#2a3852';
     $('cFeatured').checked = !!car.featured;
+    $('cDesc').value = car.desc || '';
     editPhotos = Array.isArray(car.photos) ? car.photos.slice() : [];
     $('editErr').textContent = '';
     renderPhotos();
@@ -205,7 +207,8 @@
       mileage: $('cMileage').value === '' ? null : +$('cMileage').value,
       transmission: $('cTrans').value.trim(), price: +$('cPrice').value || 0,
       auction: $('cAuction').value.trim(), status: $('cStatus').value,
-      color: $('cColor').value, featured: $('cFeatured').checked, photos: editPhotos
+      color: $('cColor').value, featured: $('cFeatured').checked,
+      desc: $('cDesc').value.trim(), photos: editPhotos
     };
     try { await window.DB.saveCar(car); closeEdit(); loadCars(); }
     catch (err) { $('editErr').textContent = 'Ошибка сохранения: ' + (err.message || err); }
@@ -268,6 +271,92 @@
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
+
+  /* ---------- Feed (лента) ---------- */
+  let feedItems = [];
+  let feedPhotos = [];
+
+  async function loadFeed() {
+    feedItems = await window.DB.getFeed();
+    $('feedCount').textContent = feedItems.length;
+    $('feedBody').innerHTML = feedItems.map(x => `
+      <tr>
+        <td>${esc(x.date)}</td>
+        <td><b>${esc(x.title)}</b>${x.published === false ? ' <span class="badge">черновик</span>' : ''}</td>
+        <td>${COUNTRY[x.country] || x.country || ''}</td>
+        <td>${x.price ? rub(x.price) : '—'}</td>
+        <td class="admin__row-actions">
+          <button class="btn btn--ghost btn--sm" data-fedit="${x.id}" title="Редактировать">✎</button>
+          <button class="btn btn--ghost btn--sm" data-fdel="${x.id}" title="Удалить">🗑</button>
+        </td>
+      </tr>`).join('') || '<tr><td colspan="5" class="admin__empty">Записей пока нет</td></tr>';
+  }
+
+  const feedModal = $('feedEdit');
+  function openFeed(item) {
+    item = item || {};
+    $('feedTitle').textContent = item.id ? 'Редактировать запись' : 'Новая запись';
+    $('fId').value = item.id || '';
+    $('fDate').value = item.date || new Date().toISOString().slice(0, 10);
+    $('fCountry').value = item.country || 'jp';
+    $('fPrice').value = item.price ?? '';
+    $('fTitle').value = item.title || '';
+    $('fSpecs').value = item.specs || '';
+    $('fBody').value = item.body || '';
+    $('fPublished').checked = item.published !== false;
+    feedPhotos = Array.isArray(item.photos) ? item.photos.slice() : [];
+    $('feedErr').textContent = '';
+    renderFeedPhotos();
+    feedModal.hidden = false; document.body.style.overflow = 'hidden';
+  }
+  function closeFeed() { feedModal.hidden = true; document.body.style.overflow = ''; }
+  document.querySelectorAll('[data-feed-close]').forEach(el => el.addEventListener('click', closeFeed));
+  function renderFeedPhotos() {
+    $('fPhotos').innerHTML = feedPhotos.map((u, i) => `
+      <div class="admin__photo"><img src="${u}" alt=""><button type="button" data-frm="${i}">×</button></div>`).join('');
+  }
+  $('fPhotos').addEventListener('click', e => {
+    const b = e.target.closest('[data-frm]');
+    if (b) { feedPhotos.splice(+b.dataset.frm, 1); renderFeedPhotos(); }
+  });
+  $('fPhotoFile').addEventListener('change', async e => {
+    for (const f of [...e.target.files]) {
+      try { feedPhotos.push(await window.DB.uploadPhoto(f)); renderFeedPhotos(); }
+      catch (err) { $('feedErr').textContent = 'Ошибка фото: ' + err.message; }
+    }
+    e.target.value = '';
+  });
+  $('addFeedBtn').addEventListener('click', () => openFeed(null));
+  $('feedBody').addEventListener('click', async e => {
+    const ed = e.target.closest('[data-fedit]');
+    const dl = e.target.closest('[data-fdel]');
+    if (ed) openFeed(feedItems.find(x => x.id === ed.dataset.fedit));
+    if (dl) {
+      const it = feedItems.find(x => x.id === dl.dataset.fdel);
+      if (confirm(`Удалить запись «${it.title}»?`)) {
+        try { await window.DB.deleteFeedItem(it.id); loadFeed(); }
+        catch (err) { alert('Ошибка: ' + err.message); }
+      }
+    }
+  });
+  $('feedForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('feedErr').textContent = '';
+    const item = {
+      id: $('fId').value || ('f' + Date.now()),
+      date: $('fDate').value,
+      country: $('fCountry').value,
+      price: $('fPrice').value === '' ? null : +$('fPrice').value,
+      title: $('fTitle').value.trim(),
+      specs: $('fSpecs').value.trim(),
+      body: $('fBody').value.trim(),
+      published: $('fPublished').checked,
+      photos: feedPhotos
+    };
+    try { await window.DB.saveFeedItem(item); closeFeed(); loadFeed(); }
+    catch (err) { $('feedErr').textContent = 'Ошибка сохранения: ' + (err.message || err); }
+  });
+  $('exportFeedBtn').addEventListener('click', () => download('feed.js', window.DB.exportFeedFile(), 'text/javascript'));
 
   refreshAuth();
 })();

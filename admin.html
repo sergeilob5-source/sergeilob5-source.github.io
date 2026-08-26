@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Админ-панель — Вихляев Авто</title>
+  <title>Админ-панель — DivanAuto</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- ===== Login ===== -->
   <div class="gate" id="adminLogin">
     <div class="gate__box">
-      <div class="gate__logo">В</div>
+      <div class="gate__logo">D</div>
       <h1>Админ-панель</h1>
       <p>Вход для сотрудников</p>
       <form id="adminLoginForm" novalidate>
@@ -27,7 +27,7 @@
   <!-- ===== Panel ===== -->
   <div class="admin" id="adminPanel" hidden>
     <header class="admin__top">
-      <a href="index.html" class="logo"><span class="logo__mark">В</span><span class="logo__text">ВИХЛЯЕВ<b>АВТО</b></span></a>
+      <a href="index.html" class="logo"><img class="logo__img" src="img/logo.png" alt="DivanAuto" onload="this.parentElement.classList.add('logo--has-img')" onerror="this.remove()"><span class="logo__mark">D</span><span class="logo__text">DIVAN<b>AUTO</b></span></a>
       <span class="admin__tag">админ-панель</span>
       <span class="admin__user" id="admWho"></span>
       <button class="btn btn--ghost" id="admLogout">Выйти</button>

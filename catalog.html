@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Каталог авто под заказ — Вихляев Авто</title>
+  <title>Каталог авто под заказ — DivanAuto</title>
   <meta name="description" content="Каталог автомобилей под заказ с аукционов Японии, Кореи и Китая. Фильтр по марке, кузову, цене, году. Заказ под ключ на ваше имя." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -27,9 +27,11 @@
   <!-- ===== Header ===== -->
   <header class="site-header" id="top">
     <div class="container header__inner">
-      <a href="index.html" class="logo" aria-label="Вихляев Авто">
-        <span class="logo__mark">В</span>
-        <span class="logo__text">ВИХЛЯЕВ<b>АВТО</b></span>
+      <a href="index.html" class="logo" aria-label="DivanAuto">
+        <img class="logo__img" src="img/logo.png" alt="DivanAuto"
+             onload="this.parentElement.classList.add('logo--has-img')" onerror="this.remove()">
+        <span class="logo__mark">D</span>
+        <span class="logo__text">DIVAN<b>AUTO</b></span>
       </a>
       <nav class="nav" id="nav">
         <a href="index.html">Главная</a>
@@ -135,7 +137,7 @@
   <!-- ===== Footer ===== -->
   <footer class="footer">
     <div class="container footer__inner">
-      <span>© 2026 Вихляев Авто. Импорт авто и мото под ключ.</span>
+      <span>© 2026 DivanAuto. Импорт авто и мото под ключ.</span>
       <a href="#top">Наверх ↑</a>
     </div>
   </footer>

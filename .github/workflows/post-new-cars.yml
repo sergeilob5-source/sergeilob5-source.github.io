@@ -1,0 +1,49 @@
+name: Post new cars
+
+# Запускается, когда в main меняется cars.js (например после «Экспорт cars.js» + push).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cars.js'
+  workflow_dispatch: {}   # можно запустить вручную из вкладки Actions
+
+permissions:
+  contents: write         # чтобы коммитить .github/posted-cars.json обратно
+
+concurrency:
+  group: post-new-cars
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Опубликовать новые авто
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          VK_TOKEN:           ${{ secrets.VK_TOKEN }}
+          VK_OWNER_ID:        ${{ secrets.VK_OWNER_ID }}
+          SITE_URL:           https://sergeilob5-source.github.io
+        run: node scripts/post-new-cars.mjs
+
+      - name: Сохранить список опубликованных
+        run: |
+          if [ -n "$(git status --porcelain .github/posted-cars.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add .github/posted-cars.json
+            git commit -m "chore: обновлён список опубликованных авто [skip ci]"
+            git push
+          else
+            echo "Изменений в списке нет."
+          fi

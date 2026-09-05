@@ -29,9 +29,19 @@
   });
 })();
 
-/* ===== Splash: показать шапку после начала прокрутки ===== */
+/* ===== Splash: логотип уходит вглубь при прокрутке + показ шапки ===== */
 if (document.body.classList.contains('has-splash')) {
-  const onScroll = () => document.body.classList.toggle('scrolled', window.scrollY > window.innerHeight * 0.5);
+  const logo = document.querySelector('.splash__logo');
+  const onScroll = () => {
+    const y = window.scrollY, vh = window.innerHeight;
+    document.body.classList.toggle('scrolled', y > vh * 0.5);
+    if (logo) {
+      const p = Math.min(y / (vh * 0.9), 1);       // прогресс 0..1
+      // parallax вниз (медленнее прокрутки) + уменьшение вглубь + растворение
+      logo.style.transform = `translateY(${y * 0.4}px) scale(${1 - p * 0.5})`;
+      logo.style.opacity = String(1 - p);
+    }
+  };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }

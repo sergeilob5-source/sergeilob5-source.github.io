@@ -49,8 +49,8 @@ img{max-width:100%;display:block}
 /* ===== Header ===== */
 .site-header{
   position:sticky;top:0;z-index:50;
-  background:linear-gradient(180deg,#7ee06a,#57cf9f);
-  border-bottom:1px solid rgba(0,0,0,.08);
+  background:linear-gradient(180deg,#b6e8c2,#a8ddcb);
+  border-bottom:1px solid rgba(0,0,0,.06);
 }
 .header__inner{display:flex;align-items:center;gap:1.2rem;height:72px}
 .logo{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.5px}
@@ -84,7 +84,7 @@ img{max-width:100%;display:block}
 /* ===== Hero ===== */
 .hero{
   position:relative;overflow:hidden;
-  background:linear-gradient(180deg,#57cf9f 0%,#3bc4de 55%,#29b6e8 100%);
+  background:linear-gradient(180deg,#a8ddcb 0%,#a4d4e2 55%,#b2d9f0 100%);
   padding:clamp(3rem,7vw,6rem) 0;
 }
 .hero__lead{color:#0e2a33}
@@ -116,7 +116,8 @@ img{max-width:100%;display:block}
 
 /* ===== Splash: стартовый экран — только логотип ===== */
 .splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;
-  text-align:center;padding:1rem;background:linear-gradient(180deg,#7ee06a 0%,#43cbd0 55%,#29b6e8 100%)}
+  text-align:center;padding:1rem;background:linear-gradient(180deg,#ade7ba 0%,#aaddd8 55%,#b2d9f0 100%)}
+.splash__logo{will-change:transform,opacity}
 .splash__logo{width:min(86vw,560px);height:min(86vw,560px);border-radius:50%;background:#fff;
   display:grid;place-items:center;box-shadow:0 30px 70px rgba(12,60,70,.28)}
 .splash__logo img{width:72%;height:auto;display:block}
@@ -129,8 +130,8 @@ img{max-width:100%;display:block}
 .section{padding:clamp(3rem,6vw,5rem) 0}
 .section--alt{background:var(--bg-alt)}
 /* Яркий верх: синяя полоса под героем до линии подзаголовка «Полный цикл…» */
-#advantages{background:linear-gradient(180deg,#29b6e8 0,#2bb8e6 120px,var(--bg) 300px)}
-#advantages .section__sub{color:#0e2a33}
+#advantages{background:linear-gradient(180deg,#b2d9f0 0,#b4daf0 120px,var(--bg) 300px)}
+#advantages .section__sub{color:#274050}
 .section__title{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:800;text-align:center}
 .section__sub{color:var(--muted);text-align:center;margin-top:.5rem;margin-bottom:2.6rem}
 

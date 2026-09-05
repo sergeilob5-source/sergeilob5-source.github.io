@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Админ-панель — DivanAuto</title>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#7ee06a" />
+  <link rel="apple-touch-icon" href="img/icon-192.png" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <!-- ===== Login ===== -->
@@ -30,6 +34,7 @@
       <a href="index.html" class="logo"><span class="logo__badge"><span class="logo__circle"><img class="logo__img" src="img/logo-icon.png?v=1" alt="DivanAuto" onerror="this.closest('.logo').classList.add('logo--noimg')"></span></span><span class="logo__mark">D</span><span class="logo__text">DIVAN<b>AUTO</b></span></a>
       <span class="admin__tag">админ-панель</span>
       <span class="admin__user" id="admWho"></span>
+      <a class="btn btn--accent" id="admToSite" href="index.html">🌐 Перейти на сайт</a>
       <button class="btn btn--ghost" id="admLogout">Выйти</button>
     </header>
 
@@ -137,6 +142,10 @@
           <div class="field"><label>🇨🇳 Китай</label><textarea id="setMgrCn" rows="4"></textarea></div>
           <div class="field"><label>🏍️ Мото</label><textarea id="setMgrMoto" rows="4"></textarea></div>
         </div>
+        <h3 class="admin__subh">Источник данных (перенос на свой сервер)</h3>
+        <p class="admin__hint">Сейчас всё на GitHub. Когда будет готов свой сервер — включите галочку и укажите адрес. Пока оставляем выключенным.</p>
+        <label class="checkbox"><input type="checkbox" id="setUseServer" /><span>Использовать свой сервер вместо GitHub</span></label>
+        <div class="field"><label>Адрес сервера</label><input id="setServerBase" placeholder="https://serveousercontent.com/... (пока пусто)" /></div>
         <p class="fb__ok" id="settingsOk" hidden>Сохранено. Обновите сайт, чтобы увидеть изменения.</p>
       </form>
     </section>
@@ -230,5 +239,6 @@
   <script src="feed.js"></script>
   <script src="db.js"></script>
   <script src="admin.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>

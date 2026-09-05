@@ -21,7 +21,7 @@ window.DB = (function () {
   const mode = client ? 'supabase' : 'local';
 
   /* ============ Локальное хранилище ============ */
-  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings', feed: 'vcar_feed' };
+  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings', feed: 'vcar_feed', server: 'vcar_server' };
   const read = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   const LOCAL_ADMIN = { login: 'admin', pass: 'vcar' }; // локальный вход на время отладки
@@ -180,6 +180,13 @@ window.DB = (function () {
     });
   }
   function saveSettings(obj) { write(LS.settings, obj); return obj; }
+
+  /* ============ Источник данных (GitHub сейчас / свой сервер позже) ============ */
+  function getServerConfig() {
+    return read(LS.server, { useServer: false, base: '' });
+  }
+  function saveServerConfig(cfg) { write(LS.server, cfg); return cfg; }
+
   function resetSettings() { localStorage.removeItem(LS.settings); }
   function exportSettingsFile() {
     return 'window.SITE_SETTINGS = ' + JSON.stringify(getSettings(), null, 2) + ';\n';
@@ -192,6 +199,7 @@ window.DB = (function () {
     signIn, signOut, currentUser,
     exportCarsFile, importCars,
     getFeed, saveFeedItem, deleteFeedItem, exportFeedFile,
-    getSettings, saveSettings, resetSettings, exportSettingsFile
+    getSettings, saveSettings, resetSettings, exportSettingsFile,
+    getServerConfig, saveServerConfig
   };
 })();

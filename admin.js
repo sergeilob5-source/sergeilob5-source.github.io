@@ -241,6 +241,9 @@
     $('setYoutube').value = s.socials?.youtube || ''; $('setTelegram').value = s.socials?.telegram || ''; $('setVk').value = s.socials?.vk || '';
     $('setMgrJp').value = arrToLines(s.managers?.jp); $('setMgrKr').value = arrToLines(s.managers?.kr);
     $('setMgrCn').value = arrToLines(s.managers?.cn); $('setMgrMoto').value = arrToLines(s.managers?.moto);
+    const srv = window.DB.getServerConfig();
+    $('setUseServer').checked = !!srv.useServer;
+    $('setServerBase').value = srv.base || '';
   }
   function collectSettings() {
     return {
@@ -253,6 +256,7 @@
   }
   $('saveSettingsBtn').addEventListener('click', () => {
     window.DB.saveSettings(collectSettings());
+    window.DB.saveServerConfig({ useServer: $('setUseServer').checked, base: $('setServerBase').value.trim() });
     $('settingsOk').hidden = false;
     setTimeout(() => $('settingsOk').hidden = true, 2600);
   });

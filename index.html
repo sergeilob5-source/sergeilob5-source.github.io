@@ -10,7 +10,7 @@
   <meta property="og:description" content="Заказ автомобилей и мотоциклов под ключ. Прозрачное оформление на ваше имя, доставка по всей России." />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
   <!-- ===== Auth gate ===== -->
@@ -32,8 +32,8 @@
   <header class="site-header" id="top">
     <div class="container header__inner">
       <a href="#top" class="logo" aria-label="DivanAuto">
-        <img class="logo__img" src="img/logo.png?v=2" alt="DivanAuto"
-             onload="this.parentElement.classList.add('logo--has-img')" onerror="this.remove()">
+        <span class="logo__badge"><span class="logo__circle"><img class="logo__img" src="img/logo-icon.png?v=1" alt="DivanAuto"
+          onerror="this.closest('.logo').classList.add('logo--noimg')"></span></span>
         <span class="logo__mark">D</span>
         <span class="logo__text">DIVAN<b>AUTO</b></span>
       </a>
@@ -74,9 +74,6 @@
           <li><b>4000+</b><span>авто доставлено</span></li>
           <li><b>100%</b><span>белое оформление</span></li>
         </ul>
-      </div>
-      <div class="hero__flags" aria-hidden="true">
-        <span>🇯🇵</span><span>🇰🇷</span><span>🇨🇳</span>
       </div>
     </div>
   </section>
@@ -128,7 +125,7 @@
       <p class="section__sub">Нажмите на страну — преимущества и популярные модели</p>
       <div class="countries">
         <div class="country">
-          <button class="country__head" aria-expanded="true">🇯🇵 Япония</button>
+          <button class="country__head" aria-expanded="true">Япония</button>
           <div class="country__body">
             <div class="country__inner">
               <p>Честный пробег и аукционные листы, богатые комплектации, надёжные гибриды. Минимальные риски по техническому состоянию.</p>
@@ -137,7 +134,7 @@
           </div>
         </div>
         <div class="country">
-          <button class="country__head" aria-expanded="false">🇰🇷 Корея</button>
+          <button class="country__head" aria-expanded="false">Корея</button>
           <div class="country__body">
             <div class="country__inner">
               <p>Свежие седаны и кроссоверы, дизели и премиум (Genesis). Хорошее оснащение за разумные деньги, аукцион Encar.</p>
@@ -146,7 +143,7 @@
           </div>
         </div>
         <div class="country">
-          <button class="country__head" aria-expanded="false">🇨🇳 Китай</button>
+          <button class="country__head" aria-expanded="false">Китай</button>
           <div class="country__body">
             <div class="country__inner">
               <p>Современные электромобили и гибриды, новые технологии, выгодная цена. Большой выбор свежих авто с малым пробегом.</p>
@@ -162,17 +159,18 @@
   <section class="section section--alt" id="stages">
     <div class="container">
       <h2 class="section__title">Этапы работы</h2>
-      <p class="section__sub">9 понятных шагов от заявки до ключей</p>
+      <p class="section__sub">10 понятных шагов от заявки до ключей</p>
       <ol class="stages">
-        <li><span class="stages__num">1</span><h3>Заключение договора</h3><p>Прописываем характеристики и конечную стоимость.</p></li>
-        <li><span class="stages__num">2</span><h3>Предоплата</h3><p>Вносите депозит — он входит в конечную стоимость авто.</p></li>
-        <li><span class="stages__num">3</span><h3>Подбор автомобиля</h3><p>Ежедневно присылаем варианты с фото и описанием.</p></li>
-        <li><span class="stages__num">4</span><h3>Покупка авто</h3><p>Выкупаем в рамках вашего бюджета — можно дешевле, не дороже.</p></li>
-        <li><span class="stages__num">5</span><h3>Оплата и отправка</h3><p>Оплачиваете стоимость авто и доставку в Россию.</p></li>
-        <li><span class="stages__num">6</span><h3>Оформление документов</h3><p>Занимаемся получением всех необходимых документов.</p></li>
-        <li><span class="stages__num">7</span><h3>Таможенное оформление</h3><p>Оплата таможенных платежей и брокерские услуги.</p></li>
-        <li><span class="stages__num">8</span><h3>Финальные платежи</h3><p>СВХ, лаборатория, брокер и иные расходы.</p></li>
-        <li><span class="stages__num">9</span><h3>Доставка до города</h3><p>Отправляем транспортной компанией к вам.</p></li>
+        <li><span class="stages__num">1</span><h3>Консультация</h3><p>Обсуждаем ваши пожелания, бюджет и подходящие варианты.</p></li>
+        <li><span class="stages__num">2</span><h3>Заключение договора</h3><p>Прописываем характеристики и конечную стоимость.</p></li>
+        <li><span class="stages__num">3</span><h3>Предоплата</h3><p>Вносите депозит — он входит в конечную стоимость авто.</p></li>
+        <li><span class="stages__num">4</span><h3>Подбор автомобиля</h3><p>Ежедневно присылаем варианты с фото и описанием.</p></li>
+        <li><span class="stages__num">5</span><h3>Покупка авто</h3><p>Выкупаем в рамках вашего бюджета — можно дешевле, не дороже.</p></li>
+        <li><span class="stages__num">6</span><h3>Оплата и отправка</h3><p>Оплачиваете стоимость авто и доставку в Россию.</p></li>
+        <li><span class="stages__num">7</span><h3>Оформление документов</h3><p>Занимаемся получением всех необходимых документов.</p></li>
+        <li><span class="stages__num">8</span><h3>Таможенное оформление</h3><p>Оплата таможенных платежей и брокерские услуги.</p></li>
+        <li><span class="stages__num">9</span><h3>Финальные платежи</h3><p>СВХ, лаборатория, брокер и иные расходы.</p></li>
+        <li><span class="stages__num">10</span><h3>Доставка до города</h3><p>Отправляем транспортной компанией к вам.</p></li>
       </ol>
       <div class="stages__cta">
         <button class="btn btn--accent btn--lg" data-modal-open data-subject="Оформить заявку">Оформить заявку</button>

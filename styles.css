@@ -49,24 +49,31 @@ img{max-width:100%;display:block}
 /* ===== Header ===== */
 .site-header{
   position:sticky;top:0;z-index:50;
-  background:rgba(255,255,255,.82);backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#7ee06a,#57cf9f);
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 .header__inner{display:flex;align-items:center;gap:1.2rem;height:72px}
 .logo{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.5px}
 .logo__mark{
-  width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+  display:none;width:38px;height:38px;border-radius:10px;place-items:center;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);
   font-size:1.3rem;font-weight:900;
 }
-.logo__text{font-size:1.05rem}
+.logo__text{font-size:1.15rem}
 .logo__text b{color:var(--accent);font-weight:800}
-.logo__img{height:52px;width:auto;display:block}
-.logo--has-img .logo__mark,.logo--has-img .logo__text{display:none}
+/* Бейдж: логотип-иконка в белом круге, круг в скруглённом квадрате (салатово-голубой) */
+.logo__badge{display:grid;place-items:center;width:56px;height:56px;border-radius:15px;
+  background:linear-gradient(135deg,#7ed957,#2fc4f0);box-shadow:0 5px 14px rgba(47,196,240,.4)}
+.logo__circle{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden}
+.logo__img{max-width:38px;max-height:38px;width:auto;height:auto;display:block}
+.logo--noimg .logo__badge{display:none}
+.logo--noimg .logo__mark{display:grid}
 .nav{display:flex;gap:1.4rem;margin-left:auto}
-.nav a{color:var(--muted);font-size:.95rem;font-weight:500;transition:color .18s}
-.nav a:hover{color:var(--text)}
-.header__phone{font-weight:700;color:var(--text)}
+.nav a{color:#0e2a20;font-size:.95rem;font-weight:600;transition:color .18s}
+.nav a:hover{color:#a11208}
+.nav a.is-active{color:#a11208}
+.header__phone{font-weight:800;color:#0e2a20}
+.burger span{background:#0e2a20}
 .header__cta{margin-left:.2rem}
 .burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
 .burger span{width:26px;height:2.5px;background:var(--text);border-radius:2px;transition:.25s}
@@ -77,12 +84,13 @@ img{max-width:100%;display:block}
 /* ===== Hero ===== */
 .hero{
   position:relative;overflow:hidden;
-  background:
-    radial-gradient(900px 500px at 85% -10%,rgba(229,53,43,.16),transparent 60%),
-    radial-gradient(700px 500px at 0% 110%,rgba(50,110,255,.12),transparent 55%),
-    var(--bg);
+  background:linear-gradient(180deg,#57cf9f 0%,#3bc4de 55%,#29b6e8 100%);
   padding:clamp(3rem,7vw,6rem) 0;
 }
+.hero__lead{color:#0e2a33}
+.hero__stats b{color:#0c2230}
+.hero__stats span{color:#134152}
+.hero__eyebrow{color:#0b3b2e}
 .hero__inner{display:flex;align-items:center;gap:2rem}
 .hero__content{max-width:640px}
 .hero__eyebrow{color:var(--accent-2);font-weight:600;letter-spacing:.4px;margin-bottom:1rem;text-transform:uppercase;font-size:.82rem}
@@ -99,6 +107,9 @@ img{max-width:100%;display:block}
 /* ===== Sections ===== */
 .section{padding:clamp(3rem,6vw,5rem) 0}
 .section--alt{background:var(--bg-alt)}
+/* Яркий верх: синяя полоса под героем до линии подзаголовка «Полный цикл…» */
+#advantages{background:linear-gradient(180deg,#29b6e8 0,#2bb8e6 120px,var(--bg) 300px)}
+#advantages .section__sub{color:#0e2a33}
 .section__title{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:800;text-align:center}
 .section__sub{color:var(--muted);text-align:center;margin-top:.5rem;margin-bottom:2.6rem}
 

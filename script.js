@@ -29,6 +29,13 @@
   });
 })();
 
+/* ===== Splash: показать шапку после начала прокрутки ===== */
+if (document.body.classList.contains('has-splash')) {
+  const onScroll = () => document.body.classList.toggle('scrolled', window.scrollY > window.innerHeight * 0.5);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
 /* ===== Mobile nav ===== */
 const burger = document.getElementById('burger');
 const nav = document.getElementById('nav');

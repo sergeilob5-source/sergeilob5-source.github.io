@@ -10,9 +10,9 @@
   <meta property="og:description" content="Заказ автомобилей и мотоциклов под ключ. Прозрачное оформление на ваше имя, доставка по всей России." />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
-<body>
+<body class="has-splash">
   <!-- ===== Auth gate ===== -->
   <div class="gate" id="authGate">
     <div class="gate__box">
@@ -27,6 +27,14 @@
       </form>
     </div>
   </div>
+
+  <!-- ===== Splash (только логотип, до прокрутки) ===== -->
+  <section class="splash" id="splash">
+    <div class="splash__logo">
+      <img src="img/logo.png?v=2" alt="DivanAuto">
+    </div>
+    <div class="splash__scroll" aria-hidden="true">Листайте вниз ↓</div>
+  </section>
 
   <!-- ===== Header ===== -->
   <header class="site-header" id="top">
@@ -74,9 +82,6 @@
           <li><b>4000+</b><span>авто доставлено</span></li>
           <li><b>100%</b><span>белое оформление</span></li>
         </ul>
-      </div>
-      <div class="hero__emblem" aria-hidden="true">
-        <img src="img/logo.png?v=2" alt="DivanAuto">
       </div>
     </div>
   </section>

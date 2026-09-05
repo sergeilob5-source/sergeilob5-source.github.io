@@ -91,8 +91,10 @@ img{max-width:100%;display:block}
 .hero__stats b{color:#0c2230}
 .hero__stats span{color:#134152}
 .hero__eyebrow{color:#0b3b2e}
-.hero__inner{display:flex;align-items:center;gap:2rem}
-.hero__content{max-width:640px}
+.hero__inner{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2rem}
+.hero__content{max-width:760px}
+.hero__actions{justify-content:center}
+.hero__stats{justify-content:center}
 .hero__eyebrow{color:var(--accent-2);font-weight:600;letter-spacing:.4px;margin-bottom:1rem;text-transform:uppercase;font-size:.82rem}
 .hero__title{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.08;font-weight:800;margin-bottom:1.1rem}
 .hero__title span{color:var(--accent-2)}
@@ -104,14 +106,12 @@ img{max-width:100%;display:block}
 .hero__stats span{color:var(--muted);font-size:.9rem}
 .hero__flags{display:flex;flex-direction:column;gap:1rem;font-size:clamp(3rem,7vw,5rem);margin-left:auto;opacity:.9}
 /* Большой круг с логотипом на ярком верхе */
-.hero__emblem{margin-left:auto;flex-shrink:0;
-  width:clamp(220px,36vw,380px);height:clamp(220px,36vw,380px);border-radius:50%;
+.hero__emblem{margin:0 auto;flex-shrink:0;
+  width:min(92vw,640px);height:min(92vw,640px);border-radius:50%;
   background:#fff;display:grid;place-items:center;box-shadow:0 22px 55px rgba(12,60,70,.22)}
-.hero__emblem img{width:76%;height:auto;display:block}
+.hero__emblem img{width:72%;height:auto;display:block}
 @media(max-width:820px){
-  .hero__inner{flex-direction:column;text-align:center}
-  .hero__emblem{margin:0 auto;width:clamp(200px,60vw,300px);height:clamp(200px,60vw,300px)}
-  .hero__actions,.hero__stats{justify-content:center}
+  .hero__emblem{width:min(92vw,460px);height:min(92vw,460px)}
 }
 
 /* ===== Sections ===== */

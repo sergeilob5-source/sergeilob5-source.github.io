@@ -21,9 +21,45 @@ window.DB = (function () {
   const mode = client ? 'supabase' : 'local';
 
   /* ============ Локальное хранилище ============ */
-  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings', feed: 'vcar_feed', server: 'vcar_server' };
+  const LS = { cars: 'vcar_cars', leads: 'vcar_leads', feedback: 'vcar_feedback', auth: 'vcar_admin', settings: 'vcar_settings', feed: 'vcar_feed', server: 'vcar_server', journal: 'vcar_journal' };
   const read = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const clone = v => (v == null ? null : JSON.parse(JSON.stringify(v)));
+
+  /* ============ Журнал действий (для отмены и ИИ-управления) ============ */
+  let suppressLog = false;
+  function logAction(action, label, before, after) {
+    if (suppressLog) return;
+    const list = read(LS.journal, []);
+    list.unshift({
+      id: 'j' + Date.now() + '-' + Math.round(Math.random() * 1e4),
+      ts: new Date().toISOString(), action, label,
+      before: clone(before), after: clone(after)
+    });
+    write(LS.journal, list.slice(0, 200));
+  }
+  function getJournal() { return read(LS.journal, []); }
+  function clearJournal() { write(LS.journal, []); }
+  // Отмена действия: возвращает прежнее состояние; саму запись убирает из журнала.
+  async function undoAction(entryId) {
+    const list = read(LS.journal, []);
+    const idx = list.findIndex(e => e.id === entryId);
+    if (idx < 0) return;
+    const e = list[idx];
+    suppressLog = true;
+    try {
+      switch (e.action) {
+        case 'car.save': if (e.before) await saveCar(e.before); else await deleteCar(e.after.id); break;
+        case 'car.delete': if (e.before) await saveCar(e.before); break;
+        case 'feed.save': if (e.before) await saveFeedItem(e.before); else await deleteFeedItem(e.after.id); break;
+        case 'feed.delete': if (e.before) await saveFeedItem(e.before); break;
+        case 'settings.save': if (e.before) saveSettings(e.before); break;
+        case 'server.save': if (e.before) saveServerConfig(e.before); break;
+      }
+    } finally { suppressLog = false; }
+    list.splice(idx, 1);
+    write(LS.journal, list);
+  }
   const LOCAL_ADMIN = { login: 'admin', pass: 'vcar' }; // локальный вход на время отладки
 
   // Первый заход: засеваем каталог из cars.js в localStorage.
@@ -50,14 +86,22 @@ window.DB = (function () {
     if (mode === 'local') {
       const list = seedCars();
       const i = list.findIndex(c => c.id === car.id);
+      const before = i >= 0 ? clone(list[i]) : null;
       if (i >= 0) list[i] = car; else list.unshift(car);
-      write(LS.cars, list); return car;
+      write(LS.cars, list);
+      logAction('car.save', (car.brand + ' ' + car.model).trim(), before, car);
+      return car;
     }
     const { data, error } = await client.from('cars').upsert(car).select();
     if (error) throw error; return data[0];
   }
   async function deleteCar(id) {
-    if (mode === 'local') { write(LS.cars, seedCars().filter(c => c.id !== id)); return; }
+    if (mode === 'local') {
+      const before = seedCars().find(c => c.id === id) || null;
+      write(LS.cars, seedCars().filter(c => c.id !== id));
+      logAction('car.delete', before ? (before.brand + ' ' + before.model).trim() : id, before, null);
+      return;
+    }
     const { error } = await client.from('cars').delete().eq('id', id);
     if (error) throw error;
   }
@@ -86,14 +130,22 @@ window.DB = (function () {
     if (mode === 'local') {
       const list = seedFeed();
       const i = list.findIndex(x => x.id === item.id);
+      const before = i >= 0 ? clone(list[i]) : null;
       if (i >= 0) list[i] = item; else list.unshift(item);
-      write(LS.feed, list); return item;
+      write(LS.feed, list);
+      logAction('feed.save', item.title || item.id, before, item);
+      return item;
     }
     const { data, error } = await client.from('feed').upsert(item).select();
     if (error) throw error; return data[0];
   }
   async function deleteFeedItem(id) {
-    if (mode === 'local') { write(LS.feed, seedFeed().filter(x => x.id !== id)); return; }
+    if (mode === 'local') {
+      const before = seedFeed().find(x => x.id === id) || null;
+      write(LS.feed, seedFeed().filter(x => x.id !== id));
+      logAction('feed.delete', before ? (before.title || id) : id, before, null);
+      return;
+    }
     const { error } = await client.from('feed').delete().eq('id', id);
     if (error) throw error;
   }
@@ -179,13 +231,23 @@ window.DB = (function () {
       managers: Object.assign({}, defaults.managers, saved.managers)
     });
   }
-  function saveSettings(obj) { write(LS.settings, obj); return obj; }
+  function saveSettings(obj) {
+    const before = clone(getSettings());
+    write(LS.settings, obj);
+    logAction('settings.save', 'Настройки сайта', before, obj);
+    return obj;
+  }
 
   /* ============ Источник данных (GitHub сейчас / свой сервер позже) ============ */
   function getServerConfig() {
     return read(LS.server, { useServer: false, base: '' });
   }
-  function saveServerConfig(cfg) { write(LS.server, cfg); return cfg; }
+  function saveServerConfig(cfg) {
+    const before = clone(getServerConfig());
+    write(LS.server, cfg);
+    logAction('server.save', 'Источник данных', before, cfg);
+    return cfg;
+  }
 
   function resetSettings() { localStorage.removeItem(LS.settings); }
   function exportSettingsFile() {
@@ -200,6 +262,7 @@ window.DB = (function () {
     exportCarsFile, importCars,
     getFeed, saveFeedItem, deleteFeedItem, exportFeedFile,
     getSettings, saveSettings, resetSettings, exportSettingsFile,
-    getServerConfig, saveServerConfig
+    getServerConfig, saveServerConfig,
+    getJournal, clearJournal, undoAction
   };
 })();

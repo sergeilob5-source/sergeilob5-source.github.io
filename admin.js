@@ -64,9 +64,10 @@
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin__tab').forEach(t => t.classList.remove('is-active'));
       tab.classList.add('is-active');
-      ['cars', 'feed', 'leads', 'feedback', 'settings'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
+      ['cars', 'feed', 'leads', 'feedback', 'journal', 'settings'].forEach(n => $('tab-' + n).hidden = (n !== tab.dataset.tab));
       if (tab.dataset.tab === 'settings') loadSettings();
       if (tab.dataset.tab === 'feed') loadFeed();
+      if (tab.dataset.tab === 'journal') loadJournal();
     });
   });
 
@@ -361,6 +362,35 @@
     catch (err) { $('feedErr').textContent = 'Ошибка сохранения: ' + (err.message || err); }
   });
   $('exportFeedBtn').addEventListener('click', () => download('feed.js', window.DB.exportFeedFile(), 'text/javascript'));
+
+  /* ---------- Journal (журнал + отмена) ---------- */
+  function loadJournal() {
+    const list = window.DB.getJournal();
+    $('journalCount').textContent = list.length;
+    $('journalBody').innerHTML = list.map(e => {
+      let a = e.action;
+      if (e.action === 'car.save') a = e.before ? 'Авто изменено' : 'Авто добавлено';
+      else if (e.action === 'car.delete') a = 'Авто удалено';
+      else if (e.action === 'feed.save') a = e.before ? 'Запись изменена' : 'Запись добавлена';
+      else if (e.action === 'feed.delete') a = 'Запись удалена';
+      else if (e.action === 'settings.save') a = 'Настройки изменены';
+      else if (e.action === 'server.save') a = 'Источник данных изменён';
+      return `<tr>
+        <td>${dt(e.ts)}</td><td>${a}</td><td>${esc(e.label)}</td>
+        <td class="admin__row-actions"><button class="btn btn--ghost btn--sm" data-undo="${e.id}">↶ Отменить</button></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="4" class="admin__empty">Журнал пуст</td></tr>';
+  }
+  $('journalBody').addEventListener('click', async e => {
+    const u = e.target.closest('[data-undo]');
+    if (u && confirm('Отменить это действие?')) {
+      await window.DB.undoAction(u.dataset.undo);
+      loadJournal(); loadCars(); loadFeed();
+    }
+  });
+  $('clearJournalBtn').addEventListener('click', () => {
+    if (confirm('Очистить историю журнала? Сами данные останутся.')) { window.DB.clearJournal(); loadJournal(); }
+  });
 
   refreshAuth();
 })();

@@ -43,6 +43,7 @@
       <button class="admin__tab" data-tab="feed">Лента</button>
       <button class="admin__tab" data-tab="leads">Заявки</button>
       <button class="admin__tab" data-tab="feedback">Отзывы</button>
+      <button class="admin__tab" data-tab="journal">Журнал</button>
       <button class="admin__tab" data-tab="settings">Настройки</button>
     </nav>
 
@@ -104,6 +105,19 @@
       <div class="admin__table-wrap">
         <table class="admin__table"><thead><tr><th>Дата</th><th>Сообщение</th><th>Контакт</th><th>Страница</th></tr></thead>
           <tbody id="fbBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Journal tab -->
+    <section class="admin__pane" id="tab-journal" hidden>
+      <div class="admin__bar">
+        <h2>Журнал действий <span id="journalCount" class="admin__count"></span></h2>
+        <button class="btn btn--ghost" id="clearJournalBtn">Очистить журнал</button>
+      </div>
+      <p class="admin__hint">Каждое изменение записывается. «Отменить» вернёт прежнее значение. Основа безопасного ИИ-управления.</p>
+      <div class="admin__table-wrap">
+        <table class="admin__table"><thead><tr><th>Время</th><th>Действие</th><th>Объект</th><th></th></tr></thead>
+          <tbody id="journalBody"></tbody></table>
       </div>
     </section>
 
